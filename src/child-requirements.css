@@ -1,0 +1,93 @@
+/* ARCHIVO SIMPLIFICADO - Estilos principales movidos a workitem-requirements.css */
+
+/* Estilos básicos para la estructura de hijos (no conflictivos) */
+.child-requirements {
+  margin-top: 5px;
+  margin-left: 25px;
+}
+
+.child-requirement-item {
+  background-color: #f8f8f8;
+  padding: 5px;
+  margin-bottom: 5px;
+  border-radius: 0;
+}
+
+.child-checkbox {
+  margin-left: 15px;
+}
+
+.child-requirement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.child-requirements h5 {
+  margin: 5px 0 8px 0;
+  font-size: 13px;
+  color: #444;
+  font-weight: 600;
+  padding-left: 5px;
+  border-left: 2px solid #66b0ff;
+}
+
+.child-requirement-item .requirement-code {
+  font-size: 13px;
+  background-color: #e3f1fa;
+}
+
+.child-requirement-item .requirement-summary {
+  font-size: 13px;
+}
+
+.child-requirement-item .requirement-body {
+  font-size: 12px;
+}
+
+.child-requirement-item .requirement-detail,
+.child-requirement-item .requirement-justification,
+.child-requirement-item .requirement-discussion {
+  padding: 6px;
+  margin-bottom: 6px;
+}
+
+/* Estilos para nietos (requisitos de tercer nivel) */
+.grandchild-requirements {
+  margin-top: 3px;
+  margin-left: 25px;
+}
+
+.grandchild-requirement-item {
+  background-color: #f0f8ff;
+  padding: 5px;
+  margin-bottom: 5px;
+  border-radius: 0;
+  font-size: 12px;
+}
+
+.grandchild-requirement-item .requirement-code {
+  font-size: 12px;
+}
+
+.grandchild-checkbox {
+  margin-left: 30px;
+}
+
+.grandchild-requirement-item .requirement-summary {
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.grandchild-requirement-item .requirement-body {
+  font-size: 11px;
+}
+
+.requirement-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Fin del archivo simplificado */

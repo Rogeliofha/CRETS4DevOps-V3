@@ -1,0 +1,40 @@
+{
+  "name": "plugin-crets-v2",
+  "version": "2.1.9",
+  "description": "CRETS4DevOps V2 - Enhanced Azure DevOps Extension for sustainability requirements management",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "dev": "webpack-dev-server --mode=development --open",
+    "publish": "tfx extension publish --manifest-globs vss-extension.json",
+    "clean-vsix": "powershell -Command \"Remove-Item -Path .\\dist\\*.vsix -Force\"",
+    "package": "npm run clean-vsix && npm run copy-json && tfx extension create --manifest-globs vss-extension.json --output-path dist",
+    "copy-json": "copy .\\src\\sustainability_requirements.json .\\dist\\sustainability_requirements.json",
+    "start": "npm run copy-json && npm run dev"
+  },
+  "keywords": [
+    "azure-devops-extension"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "azure-devops-extension-api": "^1.158.0",
+    "azure-devops-extension-sdk": "^3.1.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.11",
+    "copy-webpack-plugin": "^11.0.0",
+    "css-loader": "^6.6.0",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.1",
+    "tfx-cli": "^0.11.0",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.5",
+    "webpack": "^5.69.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4"
+  }
+}
