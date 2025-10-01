@@ -924,6 +924,68 @@ const WorkItemRequirements: React.FC = () => {
     };
   }, []); // Solo dependencias vacías para ejecutarse una sola vez
 
+  // Hook para monitorear cambios y forzar refresco automático 🔄
+  React.useEffect(() => {
+    if (!initialized || !workItemId) return;
+
+    let refreshTimeout: NodeJS.Timeout;
+    
+    // Función para refrescar los requisitos desde localStorage
+    const refreshRequirements = () => {
+      try {
+        console.log('🔄 Refrescando requisitos automáticamente...');
+        const savedRequirements = WorkItemStorage.getSelectedRequirements();
+        
+        if (savedRequirements.length > 0) {
+          console.log(`✅ ${savedRequirements.length} requisitos encontrados para refresco`);
+          setRequirements(savedRequirements);
+        } else {
+          console.log('📭 No hay requisitos para mostrar (refresco automático)');
+          setRequirements([]);
+        }
+      } catch (error) {
+        console.error('❌ Error refrescando requisitos:', error);
+      }
+    };
+
+    // Escuchar cambios en localStorage específicos para nuestro Work Item
+    const handleStorageChange = (event: StorageEvent) => {
+      const ourStorageKey = WorkItemStorage.getStorageKey('selectedRequirements');
+      
+      if (event.key === ourStorageKey) {
+        console.log('🔔 Cambio detectado en localStorage para Work Item:', {
+          workItemId: workItemId,
+          key: event.key,
+          newValue: event.newValue ? `${JSON.parse(event.newValue).length} requisitos` : 'vacío'
+        });
+        
+        // Debounce para evitar múltiples refrescos
+        clearTimeout(refreshTimeout);
+        refreshTimeout = setTimeout(refreshRequirements, 200);
+      }
+    };
+
+    // Refresco manual vía evento personalizado
+    const handleManualRefresh = () => {
+      console.log('🔄 Refresco manual solicitado para Work Item:', workItemId);
+      clearTimeout(refreshTimeout);
+      refreshTimeout = setTimeout(refreshRequirements, 50);
+    };
+
+    // Registrar listeners
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('crets.refresh', handleManualRefresh);
+
+    // Refresco inicial para sincronización
+    refreshTimeout = setTimeout(refreshRequirements, 300);
+
+    return () => {
+      clearTimeout(refreshTimeout);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('crets.refresh', handleManualRefresh);
+    };
+  }, [initialized, workItemId]); // Depende de inicialización y work item ID
+
   if (loading) return <div className="loading">Cargando requisitos...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
@@ -970,6 +1032,46 @@ const WorkItemRequirements: React.FC = () => {
           <div className="independence-test-controls">
             <button 
               onClick={() => {
+                console.log('🔄 Refresco manual solicitado por usuario');
+                const refreshRequirements = () => {
+                  try {
+                    const savedRequirements = WorkItemStorage.getSelectedRequirements();
+                    console.log(`🔄 Refrescando: ${savedRequirements.length} requisitos encontrados`);
+                    setRequirements(savedRequirements);
+                    
+                    // Disparar evento global de refresco
+                    window.dispatchEvent(new CustomEvent('crets.refresh'));
+                    
+                    alert(`🔄 REFRESCO COMPLETADO\n\n` +
+                          `Requisitos actualizados: ${savedRequirements.length}\n` +
+                          `Work Item: ${workItemId}\n` +
+                          `Estado: ${isNewWorkItem ? 'NUEVO' : 'EXISTENTE'}\n\n` +
+                          `✅ La sección se ha actualizado correctamente.`);
+                  } catch (error) {
+                    console.error('❌ Error en refresco manual:', error);
+                    alert('❌ Error al refrescar. Ver consola para detalles.');
+                  }
+                };
+                refreshRequirements();
+              }}
+              style={{
+                padding: '8px 12px',
+                margin: '10px 5px 10px 0',
+                backgroundColor: '#28a745',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: 'bold'
+              }}
+              title="Refrescar requisitos manualmente si no se actualizan automáticamente"
+            >
+              🔄 Refrescar Ahora
+            </button>
+            
+            <button 
+              onClick={() => {
                 console.log('🧪 === TESTING INDEPENDENCIA MANUAL ===');
                 WorkItemStorage.debugIndependence();
                 WorkItemStorage.verifyStrictIndependence();
@@ -988,12 +1090,12 @@ const WorkItemRequirements: React.FC = () => {
                       `Ver consola para detalles técnicos.`);
               }}
               style={{
-                padding: '5px 10px',
+                padding: '8px 12px',
                 margin: '10px 0',
                 backgroundColor: '#0078d4',
                 color: 'white',
                 border: 'none',
-                borderRadius: '3px',
+                borderRadius: '4px',
                 cursor: 'pointer',
                 fontSize: '12px'
               }}
@@ -1029,6 +1131,48 @@ const WorkItemRequirements: React.FC = () => {
           
           {workItemId ? (
             <>
+              <div className="refresh-section" style={{ marginBottom: '15px' }}>
+                <p>¿Aplicaste requisitos desde el hub pero no aparecen aquí?</p>
+                <button 
+                  onClick={() => {
+                    console.log('🔄 Refresco manual desde sección vacía');
+                    try {
+                      const savedRequirements = WorkItemStorage.getSelectedRequirements();
+                      console.log(`🔍 Verificando requisitos: ${savedRequirements.length} encontrados`);
+                      setRequirements(savedRequirements);
+                      
+                      if (savedRequirements.length > 0) {
+                        alert(`🎉 ¡REQUISITOS ENCONTRADOS!\n\n` +
+                              `Se encontraron ${savedRequirements.length} requisitos para este Work Item.\n` +
+                              `La sección se ha actualizado correctamente.`);
+                      } else {
+                        alert(`📭 No hay requisitos guardados para este Work Item.\n\n` +
+                              `Work Item: ${workItemId}\n` +
+                              `Tipo: ${workItemType || 'No identificado'}\n` +
+                              `Estado: ${isNewWorkItem ? 'NUEVO' : 'EXISTENTE'}\n\n` +
+                              `Ve al hub CRETS4DevOps y aplica algunos requisitos.`);
+                      }
+                    } catch (error) {
+                      console.error('❌ Error en refresco:', error);
+                      alert('❌ Error al refrescar. Ver consola para detalles.');
+                    }
+                  }}
+                  style={{
+                    padding: '10px 16px',
+                    margin: '10px 0',
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  🔄 Verificar y Refrescar Requisitos
+                </button>
+              </div>
+              
               <div className="independence-test-controls">
                 <button 
                   onClick={() => {

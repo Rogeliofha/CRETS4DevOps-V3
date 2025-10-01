@@ -1101,10 +1101,34 @@ const SustainabilityRequirements: React.FC = () => {
       console.log(`🎯 Requisitos preparados con clave: ${pendingKey}`);
       console.log(`📊 Total de estrategias de comunicación ejecutadas: 5`);
       
+      // ESTRATEGIA 6: Disparar evento de refresco para Work Items abiertos 🔄
+      try {
+        const refreshEvent = new CustomEvent('crets.refresh', { 
+          detail: { 
+            action: 'requirements-applied',
+            count: newSelectedReqs.length,
+            timestamp: timestamp
+          }
+        });
+        window.dispatchEvent(refreshEvent);
+        console.log('🔄 Evento de refresco disparado para Work Items');
+        
+        // También enviar a parent/child windows
+        if (window.top && window.top !== window) {
+          window.top.dispatchEvent(refreshEvent);
+        }
+        if (window.parent && window.parent !== window) {
+          window.parent.dispatchEvent(refreshEvent);
+        }
+      } catch (e) {
+        console.log('⚠️ Error disparando evento de refresco:', e);
+      }
+      
       // Mostrar feedback al usuario
       alert(`✅ ${newSelectedReqs.length} requisito(s) preparado(s) para aplicación!\n\n` +
             `Los requisitos se aplicarán automáticamente al abrir un Work Item.\n` +
-            `Abre cualquier Work Item para ver los requisitos importados.`);
+            `Si tienes un Work Item abierto, la sección se actualizará automáticamente.\n\n` +
+            `🔄 Refresco automático activado!`);
       
       // Limpiar la selección actual después de un delay reducido
       setTimeout(() => {

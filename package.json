@@ -1,6 +1,6 @@
 {
   "name": "plugin-crets-v2",
-  "version": "2.1.9",
+  "version": "2.2.0",
   "description": "CRETS4DevOps V2 - Enhanced Azure DevOps Extension for sustainability requirements management",
   "main": "index.js",
   "scripts": {
