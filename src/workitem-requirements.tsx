@@ -378,8 +378,8 @@ const RequirementItem: React.FC<{
             <span className="requirement-code">
               {requirement.displayCode || requirement.id}
               {requirement._isModified && (
-                <span className="modified-indicator" title="Requisito modificado específicamente para este Work Item">
-                  ✏️
+                <span className="modified-indicator" title="Requirement modified specifically for this Work Item">
+                  (Modified)
                 </span>
               )}
             </span>
@@ -389,31 +389,31 @@ const RequirementItem: React.FC<{
           {isEditing ? (
             <div className="edit-form">
               <div className="edit-field">
-                <label>Detalle:</label>
+                <label>Detail:</label>
                 <textarea
                   value={editForm.detail}
                   onChange={(e) => handleFormChange('detail', e.target.value)}
-                  placeholder="Detalle del requisito..."
+                  placeholder="Requirement detail..."
                   rows={3}
                   style={{ width: '100%', marginBottom: '8px' }}
                 />
               </div>
               <div className="edit-field">
-                <label>Justificación:</label>
+                <label>Justification:</label>
                 <textarea
                   value={editForm.justification}
                   onChange={(e) => handleFormChange('justification', e.target.value)}
-                  placeholder="Justificación (opcional)..."
+                  placeholder="Justification (optional)..."
                   rows={2}
                   style={{ width: '100%', marginBottom: '8px' }}
                 />
               </div>
               <div className="edit-field">
-                <label>Discusión:</label>
+                <label>Discussion:</label>
                 <textarea
                   value={editForm.discussion}
                   onChange={(e) => handleFormChange('discussion', e.target.value)}
-                  placeholder="Discusión adicional (opcional)..."
+                  placeholder="Additional discussion (optional)..."
                   rows={2}
                   style={{ width: '100%' }}
                 />
@@ -424,17 +424,17 @@ const RequirementItem: React.FC<{
               <div className="detail">{requirement.attrs?.detail || 'No detail available'}</div>
               {requirement.attrs?.Justification && (
                 <div className="justification">
-                  <strong>Justificación:</strong> {requirement.attrs.Justification}
+                  <strong>Justification:</strong> {requirement.attrs.Justification}
                 </div>
               )}
               {requirement.attrs?.Discussion && (
                 <div className="discussion">
-                  <strong>Discusión:</strong> {requirement.attrs.Discussion}
+                  <strong>Discussion:</strong> {requirement.attrs.Discussion}
                 </div>
               )}
               {requirement._modifiedDate && (
                 <div className="modification-info">
-                  <small>Modificado: {new Date(requirement._modifiedDate).toLocaleDateString()}</small>
+                  <small>Modified: {new Date(requirement._modifiedDate).toLocaleDateString()}</small>
                 </div>
               )}
             </div>
@@ -446,18 +446,18 @@ const RequirementItem: React.FC<{
               <button 
                 className="save-button"
                 onClick={handleSaveEdit}
-                title="Guardar cambios"
+                title="Save changes"
                 style={{ marginRight: '5px', backgroundColor: '#28a745', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
               >
-                💾
+                Save
               </button>
               <button 
                 className="cancel-button"
                 onClick={handleCancelEdit}
-                title="Cancelar edición"
+                title="Cancel edit"
                 style={{ backgroundColor: '#6c757d', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
               >
-                ❌
+                Cancel
               </button>
             </div>
           ) : (
@@ -465,10 +465,10 @@ const RequirementItem: React.FC<{
               <button 
                 className="edit-button"
                 onClick={handleStartEdit}
-                title="Editar requisito (específico para este Work Item)"
+                title="Edit requirement (specific for this Work Item)"
                 style={{ marginRight: '5px', backgroundColor: '#007bff', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
               >
-                ✏️
+                Edit
               </button>
               {requirement._isModified && requirement._originalRequirement && (
                 <button 
@@ -484,10 +484,10 @@ const RequirementItem: React.FC<{
                       onEdit(requirement.id, restoredRequirement);
                     }
                   }}
-                  title="Restaurar a versión original del catálogo"
+                  title="Restore to original catalog version"
                   style={{ marginRight: '5px', backgroundColor: '#ffc107', color: '#212529', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
                 >
-                  ↺
+                  Restore
                 </button>
               )}
               <button 
@@ -496,7 +496,7 @@ const RequirementItem: React.FC<{
                 title="Remove this requirement"
                 style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
               >
-                ✕
+                Remove
               </button>
             </div>
           )}
@@ -779,7 +779,7 @@ const WorkItemRequirements: React.FC = () => {
                       `Esta modificación es independiente y no afecta:\n` +
                       `• El catálogo original de CRETS4DevOps\n` +
                       `• Otros Work Items del proyecto\n\n` +
-                      `💡 Tip: Usa el botón ↺ para restaurar al original cuando quieras.\n\n` +
+                      `Tip: Use the Restore button to return to original when needed.\n\n` +
                       `✨ Independencia total garantizada!`);
               }, 100);
               
@@ -964,19 +964,19 @@ const WorkItemRequirements: React.FC = () => {
             
             try {
               // Mostrar modal de confirmación mejorado
-              const confirmMessage = `🌱 REQUISITOS DE SOSTENIBILIDAD DISPONIBLES\n\n` +
-                `Se encontraron ${count} requisito(s) listos para aplicar a este Work Item.\n\n` +
-                `✅ Serán independientes (no afectan otros Work Items)\n` +
-                `✅ Se pueden remover individualmente\n` +
-                `✅ Se guardan automáticamente\n\n` +
-                `¿Deseas aplicar estos requisitos ahora?`;
+              const confirmMessage = `Apply Sustainability Requirements\n\n` +
+                `Found ${count} requirement(s) ready to apply to this Work Item.\n\n` +
+                `✅ Will be independent (do not affect other Work Items)\n` +
+                `✅ Can be removed individually\n` +
+                `✅ Are saved automatically\n\n` +
+                `Do you want to apply these requirements now?`;
               
               const shouldApply = window.confirm(confirmMessage);
               
               if (shouldApply && !isCleanedUp) {
                 // Usar functional update para evitar stale closures
                 setRequirements(currentReqs => {
-                  console.log(`📦 Combinando requisitos existentes (${currentReqs.length}) con nuevos (${requirements.length})`);
+                  console.log(`📦 Combining existing requirements (${currentReqs.length}) with new ones (${requirements.length})`);
                   
                   // Combinar sin duplicar
                   const combinedReqs = [...currentReqs];
@@ -992,11 +992,11 @@ const WorkItemRequirements: React.FC = () => {
                   // Guardar en storage
                   WorkItemStorage.setSelectedRequirements(combinedReqs);
                   
-                  console.log(`✅ ${newlyAdded} nuevos requisitos aplicados (total: ${combinedReqs.length})`);
+                  console.log(`✅ ${newlyAdded} new requirements applied (total: ${combinedReqs.length})`);
                   
                   // Mostrar notificación de éxito
                   setTimeout(() => {
-                    alert(`✅ ¡Éxito!\n\n${newlyAdded} requisito(s) aplicado(s) al Work Item.\n\nTotal de requisitos: ${combinedReqs.length}`);
+                    alert(`✅ Success!\n\n${newlyAdded} requirement(s) applied to Work Item.\n\nTotal requirements: ${combinedReqs.length}`);
                   }, 100);
                   
                   return combinedReqs;
@@ -1007,7 +1007,7 @@ const WorkItemRequirements: React.FC = () => {
               
             } catch (err) {
               console.error('❌ Error procesando nuevos requisitos:', err);
-              alert('Error aplicando requisitos. Por favor intenta nuevamente.');
+              alert('Error applying requirements. Please try again.');
             } finally {
               // Limpiar clave temporal si existe
               if (pendingKey) {
@@ -1242,21 +1242,6 @@ const WorkItemRequirements: React.FC = () => {
 
   return (
     <div className={`workitem-requirements-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
-      <div className="workitem-info">
-        <small>
-          Work Item: {workItemId ? `${workItemId}` : 'Obteniendo ID...'}
-          {workItemType && (
-            <span style={{ color: '#0078d4', fontWeight: 'bold', marginLeft: '8px' }}>
-              [{workItemType}]
-            </span>
-          )}
-          {isNewWorkItem && (
-            <span style={{ color: '#ff6600', fontWeight: 'bold', marginLeft: '8px' }}>
-              [NUEVO - Guarda primero para obtener ID permanente]
-            </span>
-          )}
-        </small>
-      </div>
 
       {requirements.length > 0 ? (
         <>
@@ -1288,16 +1273,16 @@ const WorkItemRequirements: React.FC = () => {
             margin: '10px 0',
             color: '#0c5460'
           }}>
-            <h4 style={{ margin: '0 0 8px 0', color: '#0c5460' }}>✏️ Edición Independiente de Requisitos</h4>
+            <h4 style={{ margin: '0 0 8px 0', color: '#0c5460' }}>Independent Requirements Editing</h4>
             <p style={{ margin: '0 0 8px 0', fontSize: '14px' }}>
-              Cada requisito puede ser personalizado específicamente para este Work Item sin afectar 
-              el catálogo original ni otros Work Items.
+              Each requirement can be customized specifically for this Work Item without affecting 
+              the original catalog or other Work Items.
             </p>
             <div style={{ display: 'flex', gap: '15px', fontSize: '12px', marginTop: '8px' }}>
-              <span><strong>✏️</strong> Editar contenido</span>
-              <span><strong>↺</strong> Restaurar original</span>
-              <span><strong>🔄</strong> Refresco automático</span>
-              <span><strong>✕</strong> Remover</span>
+              <span><strong>Edit</strong> content</span>
+              <span><strong>Restore</strong> original</span>
+              <span><strong>Auto</strong> refresh</span>
+              <span><strong>Remove</strong></span>
             </div>
           </div>
           
@@ -1314,14 +1299,14 @@ const WorkItemRequirements: React.FC = () => {
                     // Disparar evento global de refresco
                     window.dispatchEvent(new CustomEvent('crets.refresh'));
                     
-                    alert(`🔄 REFRESCO COMPLETADO\n\n` +
-                          `Requisitos actualizados: ${savedRequirements.length}\n` +
+                    alert(`REFRESH COMPLETED\n\n` +
+                          `Updated requirements: ${savedRequirements.length}\n` +
                           `Work Item: ${workItemId}\n` +
-                          `Estado: ${isNewWorkItem ? 'NUEVO' : 'EXISTENTE'}\n\n` +
-                          `✅ La sección se ha actualizado correctamente.`);
+                          `Status: ${isNewWorkItem ? 'NEW' : 'EXISTING'}\n\n` +
+                          `✅ Section has been updated correctly.`);
                   } catch (error) {
                     console.error('❌ Error en refresco manual:', error);
-                    alert('❌ Error al refrescar. Ver consola para detalles.');
+                    alert('❌ Error refreshing. See console for details.');
                   }
                 };
                 refreshRequirements();
@@ -1329,7 +1314,7 @@ const WorkItemRequirements: React.FC = () => {
               style={{
                 padding: '8px 12px',
                 margin: '10px 5px 10px 0',
-                backgroundColor: '#28a745',
+                backgroundColor: '#007bff',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
@@ -1337,43 +1322,9 @@ const WorkItemRequirements: React.FC = () => {
                 fontSize: '12px',
                 fontWeight: 'bold'
               }}
-              title="Refrescar requisitos manualmente si no se actualizan automáticamente"
+              title="Refresh requirements manually if they don't update automatically"
             >
-              🔄 Refrescar Ahora
-            </button>
-            
-            <button 
-              onClick={() => {
-                console.log('🧪 === TESTING INDEPENDENCIA MANUAL ===');
-                WorkItemStorage.debugIndependence();
-                WorkItemStorage.verifyStrictIndependence();
-                
-                // Mostrar resumen en alert para fácil verificación
-                const storageKey = WorkItemStorage.getStorageKey('selectedRequirements');
-                const currentReqs = WorkItemStorage.getSelectedRequirements();
-                
-                alert(`🔬 VERIFICACIÓN DE INDEPENDENCIA\n\n` +
-                      `Work Item: ${workItemId} [${workItemType || 'Tipo no identificado'}]\n` +
-                      `Estado: ${isNewWorkItem ? 'NUEVO (temporal)' : 'EXISTENTE (permanente)'}\n` +
-                      `Storage Key: ${storageKey}\n` +
-                      `Requisitos: ${currentReqs.length}\n\n` +
-                      `✅ Este Work Item tiene storage completamente independiente.\n` +
-                      `Funciona con cualquier tipo: PBI, Epic, Feature, Bug, Task, etc.\n\n` +
-                      `Ver consola para detalles técnicos.`);
-              }}
-              style={{
-                padding: '8px 12px',
-                margin: '10px 0',
-                backgroundColor: '#0078d4',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '12px'
-              }}
-              title="Verificar independencia de este Work Item"
-            >
-              🧪 Test Independencia
+              Refresh Now
             </button>
           </div>
           
@@ -1381,8 +1332,8 @@ const WorkItemRequirements: React.FC = () => {
             <thead>
               <tr>
                 <th className="id-header">ID</th>
-                <th className="detail-header">Detalle</th>
-                <th className="action-header">Acciones</th>
+                <th className="detail-header">Detail</th>
+                <th className="action-header">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -1400,12 +1351,12 @@ const WorkItemRequirements: React.FC = () => {
         </>
       ) : (
         <div className="no-requirements">
-          <h3>❌ Sin requisitos de sostenibilidad aplicados</h3>
+          <h3>No sustainability requirements applied</h3>
           
           {workItemId ? (
             <>
               <div className="refresh-section" style={{ marginBottom: '15px' }}>
-                <p>¿Aplicaste requisitos desde el hub pero no aparecen aquí?</p>
+                <p>Did you apply requirements from the hub but they don't appear here?</p>
                 <button 
                   onClick={() => {
                     console.log('🔄 Refresco manual desde sección vacía');
@@ -1415,25 +1366,25 @@ const WorkItemRequirements: React.FC = () => {
                       setRequirements(savedRequirements);
                       
                       if (savedRequirements.length > 0) {
-                        alert(`🎉 ¡REQUISITOS ENCONTRADOS!\n\n` +
-                              `Se encontraron ${savedRequirements.length} requisitos para este Work Item.\n` +
-                              `La sección se ha actualizado correctamente.`);
+                        alert(`REQUIREMENTS FOUND!\n\n` +
+                              `Found ${savedRequirements.length} requirements for this Work Item.\n` +
+                              `The section has been updated correctly.`);
                       } else {
-                        alert(`📭 No hay requisitos guardados para este Work Item.\n\n` +
+                        alert(`No saved requirements for this Work Item.\n\n` +
                               `Work Item: ${workItemId}\n` +
-                              `Tipo: ${workItemType || 'No identificado'}\n` +
-                              `Estado: ${isNewWorkItem ? 'NUEVO' : 'EXISTENTE'}\n\n` +
-                              `Ve al hub CRETS4DevOps y aplica algunos requisitos.`);
+                              `Type: ${workItemType || 'Not identified'}\n` +
+                              `Status: ${isNewWorkItem ? 'NEW' : 'EXISTING'}\n\n` +
+                              `Go to the CRETS4DevOps hub and apply some requirements.`);
                       }
                     } catch (error) {
                       console.error('❌ Error en refresco:', error);
-                      alert('❌ Error al refrescar. Ver consola para detalles.');
+                      alert('Error refreshing. See console for details.');
                     }
                   }}
                   style={{
                     padding: '10px 16px',
                     margin: '10px 0',
-                    backgroundColor: '#28a745',
+                    backgroundColor: '#007bff',
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',
@@ -1442,74 +1393,39 @@ const WorkItemRequirements: React.FC = () => {
                     fontWeight: 'bold'
                   }}
                 >
-                  🔄 Verificar y Refrescar Requisitos
-                </button>
-              </div>
-              
-              <div className="independence-test-controls">
-                <button 
-                  onClick={() => {
-                    console.log('🧪 === TESTING INDEPENDENCIA MANUAL (WORK ITEM VACÍO) ===');
-                    WorkItemStorage.debugIndependence();
-                    WorkItemStorage.verifyStrictIndependence();
-                    
-                    const storageKey = WorkItemStorage.getStorageKey('selectedRequirements');
-                    
-                    alert(`🔬 VERIFICACIÓN DE INDEPENDENCIA (Work Item Vacío)\n\n` +
-                          `Work Item: ${workItemId} [${workItemType || 'Tipo no identificado'}]\n` +
-                          `Storage Key: ${storageKey}\n` +
-                          `Requisitos: 0 (correcto)\n\n` +
-                          `✅ Este Work Item está completamente vacío e independiente.\n` +
-                          `Esto es correcto para un nuevo Work Item.\n` +
-                          `Compatible con todos los tipos: PBI, Epic, Feature, Bug, etc.\n\n` +
-                          `Ver consola para detalles técnicos.`);
-                  }}
-                  style={{
-                    padding: '5px 10px',
-                    margin: '10px 0',
-                    backgroundColor: '#107c10',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '3px',
-                    cursor: 'pointer',
-                    fontSize: '12px'
-                  }}
-                  title="Verificar que este Work Item está correctamente vacío e independiente"
-                >
-                  🧪 Verificar Work Item Vacío
+                  Check and Refresh Requirements
                 </button>
               </div>
               
               <div className="instructions">
-                <h4>💡 Cómo agregar requisitos:</h4>
+                <h4>How to add requirements:</h4>
                 <ol>
-                  <li>Ve al hub "CRETS4DevOps V2" en tu proyecto</li>
-                  <li>Selecciona los requisitos de sostenibilidad que necesitas</li>
-                  <li>Haz clic en "Apply Selected to Work Items"</li>
-                  <li>Los requisitos se aplicarán de manera independiente a este Work Item</li>
+                  <li>Go to the "CRETS4DevOps V2" hub in your project</li>
+                  <li>Select the sustainability requirements you need</li>
+                  <li>Click "Apply Selected to Work Items"</li>
+                  <li>Requirements will be applied independently to this Work Item</li>
                 </ol>
                 <div className="independence-note">
-                  <strong>🔒 Independencia:</strong> Cada Work Item tiene su propio conjunto independiente    
-                  de requisitos de sostenibilidad. Agregar requisitos a un Work Item no afecta a otros.
+                  <strong>Independence:</strong> Each Work Item has its own independent set of sustainability requirements. Adding requirements to one Work Item does not affect others.
                 </div>
               </div>
             </>
           ) : (
             <div className="error">
-              <h4>⚠️ Error de contexto</h4>
-              <p>No se pudo obtener el ID del Work Item.</p>
-              <p><strong>Tipos de Work Item compatibles:</strong></p>
+              <h4>Context Error</h4>
+              <p>Could not get Work Item ID.</p>
+              <p><strong>Compatible Work Item types:</strong></p>
               <ul>
-                <li>🎯 Product Backlog Item (PBI)</li>
-                <li>🏢 Epic</li>
-                <li>⭐ Feature</li>
-                <li>🐛 Bug</li>
-                <li>✅ Task</li>
-                <li>🧪 Test Case</li>
-                <li>📋 User Story</li>
-                <li>🎨 Otros tipos personalizados</li>
+                <li>Product Backlog Item (PBI)</li>
+                <li>Epic</li>
+                <li>Feature</li>
+                <li>Bug</li>
+                <li>Task</li>
+                <li>Test Case</li>
+                <li>User Story</li>
+                <li>Other custom types</li>
               </ul>
-              <p>Por favor, asegúrate de que estás viendo esta pestaña desde cualquier Work Item abierto en Azure DevOps.</p>
+              <p>Please make sure you are viewing this tab from any Work Item opened in Azure DevOps.</p>
             </div>
           )}
         </div>

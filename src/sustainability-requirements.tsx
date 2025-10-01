@@ -965,15 +965,15 @@ const SustainabilityRequirements: React.FC = () => {
     }
     
     // Mostrar ventana emergente de confirmación
-    const confirmMessage = `🌱 APLICAR REQUISITOS DE SOSTENIBILIDAD\n\n` +
-      `Se aplicarán ${checkedRequirements.length} requisito(s) de sostenibilidad.\n\n` +
-      `✅ Los requisitos serán independientes por Work Item\n` +
-      `✅ No afectarán otros Work Items del proyecto\n` +
-      `✅ Se pueden remover individualmente\n\n` +
-      `¿Deseas continuar?`;
+    const confirmMessage = `Apply Sustainability Requirements\n\n` +
+      `${checkedRequirements.length} sustainability requirement(s) will be applied.\n\n` +
+      `✅ Requirements will be independent per Work Item\n` +
+      `✅ Will not affect other Work Items in the project\n` +
+      `✅ Can be removed individually\n\n` +
+      `Do you want to continue?`;
     
     if (!confirm(confirmMessage)) {
-      console.log('Usuario canceló la aplicación de requisitos');
+      console.log('User cancelled requirements application');
       return;
     }
     
@@ -992,7 +992,7 @@ const SustainabilityRequirements: React.FC = () => {
         }
       });
       
-      console.log(`🚀 Preparando ${newSelectedReqs.length} requisitos para aplicación independiente`);
+      console.log(`🚀 Preparing ${newSelectedReqs.length} requirements for independent application`);
       
       // Sistema de comunicación mejorado con múltiples estrategias
       const timestamp = Date.now();
@@ -1125,20 +1125,20 @@ const SustainabilityRequirements: React.FC = () => {
       }
       
       // Mostrar feedback al usuario
-      alert(`✅ ${newSelectedReqs.length} requisito(s) preparado(s) para aplicación!\n\n` +
-            `Los requisitos se aplicarán automáticamente al abrir un Work Item.\n` +
-            `Si tienes un Work Item abierto, la sección se actualizará automáticamente.\n\n` +
-            `🔄 Refresco automático activado!`);
+      alert(`✅ ${newSelectedReqs.length} requirement(s) prepared for application!\n\n` +
+            `Requirements will be automatically applied when opening a Work Item.\n` +
+            `If you have a Work Item open, the section will update automatically.\n\n` +
+            `🔄 Auto-refresh activated!`);
       
       // Limpiar la selección actual después de un delay reducido
       setTimeout(() => {
         setCheckedRequirements([]);
         setShowSelectedPanel(false);
-        console.log('🧹 Selección limpiada');
+        console.log('🧹 Selection cleared');
       }, 2000); // Tiempo reducido para mejor UX
       
     } catch (e) {
-      console.error('Error preparando requisitos para aplicación:', e);
+      console.error('Error preparing requirements for application:', e);
     }
   };
 
