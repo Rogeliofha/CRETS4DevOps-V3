@@ -6,7 +6,7 @@ import { IWorkItemFormService, WorkItemTrackingServiceIds } from 'azure-devops-e
 import './workitem-requirements.css';
 import './child-requirements.css';
 
-// Interface para los requisitos de sostenibilidad
+// Interface para los requisitos de sostenibilidad (con soporte para edición independiente)
 interface Requirement {
   id: string;
   displayCode: string;
@@ -18,6 +18,10 @@ interface Requirement {
     Justification?: string;
     Discussion?: string;
   };
+  // Campos para tracking de modificaciones independientes por Work Item
+  _isModified?: boolean;
+  _modifiedDate?: string;
+  _originalRequirement?: Requirement; // Referencia al requisito original del catálogo
 }
 
 // Sistema de storage independiente por work item (mejorado v2.1.5)
@@ -230,14 +234,30 @@ class WorkItemStorage {
   }
 }
 
-// Componente para mostrar un requisito individual (optimizado)
+// Componente para mostrar un requisito individual (con capacidad de edición independiente)
 const RequirementItem: React.FC<{
   requirement: Requirement;
   allRequirements: Requirement[];
   onRemove: (id: string) => void;
+  onEdit?: (id: string, updatedRequirement: Requirement) => void;
   expanded?: boolean;
-}> = React.memo(({ requirement, allRequirements, onRemove, expanded = true }) => {
+}> = React.memo(({ requirement, allRequirements, onRemove, onEdit, expanded = true }) => {
   const [isExpanded, setIsExpanded] = React.useState(expanded);
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editForm, setEditForm] = React.useState({
+    detail: requirement.attrs?.detail || '',
+    justification: requirement.attrs?.Justification || '',
+    discussion: requirement.attrs?.Discussion || ''
+  });
+  
+  // Resetear formulario cuando cambie el requisito
+  React.useEffect(() => {
+    setEditForm({
+      detail: requirement.attrs?.detail || '',
+      justification: requirement.attrs?.Justification || '',
+      discussion: requirement.attrs?.Discussion || ''
+    });
+  }, [requirement]);
   
   // Calcular hijos del requisito (optimizado con useMemo)
   const childRequirements = React.useMemo(() => {
@@ -288,13 +308,62 @@ const RequirementItem: React.FC<{
     setIsExpanded(!isExpanded);
   }, [isExpanded]);
 
+  // Handlers para edición
+  const handleStartEdit = React.useCallback(() => {
+    setIsEditing(true);
+  }, []);
+
+  const handleCancelEdit = React.useCallback(() => {
+    setIsEditing(false);
+    // Restaurar valores originales
+    setEditForm({
+      detail: requirement.attrs?.detail || '',
+      justification: requirement.attrs?.Justification || '',
+      discussion: requirement.attrs?.Discussion || ''
+    });
+  }, [requirement]);
+
+  const handleSaveEdit = React.useCallback(() => {
+    if (!onEdit) return;
+    
+    // Crear requisito actualizado
+    const updatedRequirement = {
+      ...requirement,
+      attrs: {
+        ...requirement.attrs,
+        detail: editForm.detail,
+        Justification: editForm.justification,
+        Discussion: editForm.discussion
+      },
+      _isModified: true, // Marcar como modificado
+      _modifiedDate: new Date().toISOString()
+    };
+
+    console.log('✏️ Guardando requisito editado:', {
+      id: requirement.id,
+      originalDetail: requirement.attrs?.detail,
+      newDetail: editForm.detail,
+      workItemSpecific: true
+    });
+
+    onEdit(requirement.id, updatedRequirement);
+    setIsEditing(false);
+  }, [onEdit, requirement, editForm]);
+
+  const handleFormChange = React.useCallback((field: string, value: string) => {
+    setEditForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
   if (!requirement?.id) {
     return null;
   }
 
   return (
     <>
-      <tr className="requirement-row">
+      <tr className={`requirement-row ${requirement._isModified ? 'modified' : ''}`}>
         <td className="requirement-id">
           <div className="id-container">
             {childRequirements.length > 0 && (
@@ -306,18 +375,131 @@ const RequirementItem: React.FC<{
                 {isExpanded ? '▼' : '▶'}
               </button>
             )}
-            <span className="requirement-code">{requirement.displayCode || requirement.id}</span>
+            <span className="requirement-code">
+              {requirement.displayCode || requirement.id}
+              {requirement._isModified && (
+                <span className="modified-indicator" title="Requisito modificado específicamente para este Work Item">
+                  ✏️
+                </span>
+              )}
+            </span>
           </div>
         </td>
-        <td className="requirement-detail">{requirement.attrs?.detail || 'No detail available'}</td>
+        <td className="requirement-detail">
+          {isEditing ? (
+            <div className="edit-form">
+              <div className="edit-field">
+                <label>Detalle:</label>
+                <textarea
+                  value={editForm.detail}
+                  onChange={(e) => handleFormChange('detail', e.target.value)}
+                  placeholder="Detalle del requisito..."
+                  rows={3}
+                  style={{ width: '100%', marginBottom: '8px' }}
+                />
+              </div>
+              <div className="edit-field">
+                <label>Justificación:</label>
+                <textarea
+                  value={editForm.justification}
+                  onChange={(e) => handleFormChange('justification', e.target.value)}
+                  placeholder="Justificación (opcional)..."
+                  rows={2}
+                  style={{ width: '100%', marginBottom: '8px' }}
+                />
+              </div>
+              <div className="edit-field">
+                <label>Discusión:</label>
+                <textarea
+                  value={editForm.discussion}
+                  onChange={(e) => handleFormChange('discussion', e.target.value)}
+                  placeholder="Discusión adicional (opcional)..."
+                  rows={2}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="requirement-content">
+              <div className="detail">{requirement.attrs?.detail || 'No detail available'}</div>
+              {requirement.attrs?.Justification && (
+                <div className="justification">
+                  <strong>Justificación:</strong> {requirement.attrs.Justification}
+                </div>
+              )}
+              {requirement.attrs?.Discussion && (
+                <div className="discussion">
+                  <strong>Discusión:</strong> {requirement.attrs.Discussion}
+                </div>
+              )}
+              {requirement._modifiedDate && (
+                <div className="modification-info">
+                  <small>Modificado: {new Date(requirement._modifiedDate).toLocaleDateString()}</small>
+                </div>
+              )}
+            </div>
+          )}
+        </td>
         <td className="requirement-actions">
-          <button 
-            className="remove-button"
-            onClick={handleRemove}
-            title="Remove this requirement"
-          >
-            ✕
-          </button>
+          {isEditing ? (
+            <div className="edit-actions">
+              <button 
+                className="save-button"
+                onClick={handleSaveEdit}
+                title="Guardar cambios"
+                style={{ marginRight: '5px', backgroundColor: '#28a745', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
+              >
+                💾
+              </button>
+              <button 
+                className="cancel-button"
+                onClick={handleCancelEdit}
+                title="Cancelar edición"
+                style={{ backgroundColor: '#6c757d', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
+              >
+                ❌
+              </button>
+            </div>
+          ) : (
+            <div className="view-actions">
+              <button 
+                className="edit-button"
+                onClick={handleStartEdit}
+                title="Editar requisito (específico para este Work Item)"
+                style={{ marginRight: '5px', backgroundColor: '#007bff', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
+              >
+                ✏️
+              </button>
+              {requirement._isModified && requirement._originalRequirement && (
+                <button 
+                  className="restore-button"
+                  onClick={() => {
+                    if (onEdit && requirement._originalRequirement) {
+                      const restoredRequirement: Requirement = {
+                        ...requirement._originalRequirement,
+                        _isModified: false,
+                        _modifiedDate: undefined,
+                        _originalRequirement: undefined
+                      };
+                      onEdit(requirement.id, restoredRequirement);
+                    }
+                  }}
+                  title="Restaurar a versión original del catálogo"
+                  style={{ marginRight: '5px', backgroundColor: '#ffc107', color: '#212529', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
+                >
+                  ↺
+                </button>
+              )}
+              <button 
+                className="remove-button"
+                onClick={handleRemove}
+                title="Remove this requirement"
+                style={{ backgroundColor: '#dc3545', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '3px' }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </td>
       </tr>
       {isExpanded && childRequirements.map(child => (
@@ -326,6 +508,7 @@ const RequirementItem: React.FC<{
           requirement={child}
           allRequirements={allRequirements}
           onRemove={onRemove}
+          onEdit={onEdit}
           expanded={false}
         />
       ))}
@@ -547,6 +730,74 @@ const WorkItemRequirements: React.FC = () => {
       
     } catch (err) {
       console.error("Error al remover requisito:", err);
+    }
+  }, [workItemId]);
+
+  // Función para editar un requisito específico del Work Item (independiente del catálogo)
+  const editRequirement = React.useCallback((requirementId: string, updatedRequirement: Requirement) => {
+    console.log(`✏️ Editando requisito: ${requirementId} del work item ${workItemId}`);
+    
+    try {
+      setRequirements(currentRequirements => {
+        const updatedRequirements = currentRequirements.map(req => {
+          if (req.id === requirementId) {
+            // Verificar si es una restauración
+            const isRestoring = !updatedRequirement._isModified && req._isModified;
+            
+            if (isRestoring) {
+              console.log(`🔄 Restaurando requisito ${requirementId} a versión original`);
+              
+              // Mostrar confirmación de restauración
+              setTimeout(() => {
+                alert(`🔄 ¡Requisito restaurado!\n\n` +
+                      `El requisito ${requirementId} ha sido restaurado a su versión original del catálogo.\n\n` +
+                      `Se han eliminado las modificaciones específicas de este Work Item.\n\n` +
+                      `✨ Independencia total mantenida!`);
+              }, 100);
+              
+              return updatedRequirement;
+            } else {
+              // Es una edición normal
+              const editedRequirement = {
+                ...updatedRequirement,
+                _isModified: true,
+                _modifiedDate: new Date().toISOString(),
+                _originalRequirement: req._originalRequirement || { ...req } // Guardar original si no existe
+              };
+              
+              console.log(`📝 Requisito ${requirementId} modificado para work item ${workItemId}:`, {
+                originalDetail: req.attrs?.detail?.substring(0, 50) + '...',
+                newDetail: editedRequirement.attrs?.detail?.substring(0, 50) + '...',
+                workItemSpecific: true,
+                modifiedDate: editedRequirement._modifiedDate
+              });
+              
+              // Mostrar confirmación de edición
+              setTimeout(() => {
+                alert(`✅ ¡Requisito modificado!\n\n` +
+                      `El requisito ${requirementId} ha sido personalizado para este Work Item.\n\n` +
+                      `Esta modificación es independiente y no afecta:\n` +
+                      `• El catálogo original de CRETS4DevOps\n` +
+                      `• Otros Work Items del proyecto\n\n` +
+                      `💡 Tip: Usa el botón ↺ para restaurar al original cuando quieras.\n\n` +
+                      `✨ Independencia total garantizada!`);
+              }, 100);
+              
+              return editedRequirement;
+            }
+          }
+          return req;
+        });
+        
+        // Guardar en storage independiente
+        WorkItemStorage.setSelectedRequirements(updatedRequirements);
+        
+        return updatedRequirements;
+      });
+      
+    } catch (err) {
+      console.error("❌ Error al editar requisito:", err);
+      alert("Error al guardar los cambios. Por favor intenta nuevamente.");
     }
   }, [workItemId]);
 
@@ -1029,6 +1280,27 @@ const WorkItemRequirements: React.FC = () => {
             </div>
           )}
           
+          <div className="editing-info" style={{
+            backgroundColor: '#e8f4fd',
+            border: '1px solid #007bff',
+            borderRadius: '4px',
+            padding: '12px',
+            margin: '10px 0',
+            color: '#0c5460'
+          }}>
+            <h4 style={{ margin: '0 0 8px 0', color: '#0c5460' }}>✏️ Edición Independiente de Requisitos</h4>
+            <p style={{ margin: '0 0 8px 0', fontSize: '14px' }}>
+              Cada requisito puede ser personalizado específicamente para este Work Item sin afectar 
+              el catálogo original ni otros Work Items.
+            </p>
+            <div style={{ display: 'flex', gap: '15px', fontSize: '12px', marginTop: '8px' }}>
+              <span><strong>✏️</strong> Editar contenido</span>
+              <span><strong>↺</strong> Restaurar original</span>
+              <span><strong>🔄</strong> Refresco automático</span>
+              <span><strong>✕</strong> Remover</span>
+            </div>
+          </div>
+          
           <div className="independence-test-controls">
             <button 
               onClick={() => {
@@ -1120,6 +1392,7 @@ const WorkItemRequirements: React.FC = () => {
                   requirement={req} 
                   allRequirements={requirements}
                   onRemove={removeRequirement}
+                  onEdit={editRequirement}
                 />
               ))}
             </tbody>

@@ -536,3 +536,192 @@ tr.child-requirement-row:hover {
   border: 1px solid var(--remove-button-border);
   margin-top: 15px;
 }
+
+/* ==========================================
+   ESTILOS PARA EDICIÓN INDEPENDIENTE V3
+   ========================================== */
+
+/* Fila modificada */
+.requirement-row.modified {
+  background-color: rgba(255, 235, 59, 0.1) !important;
+  border-left: 3px solid #ffc107;
+}
+
+.dark-theme .requirement-row.modified {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+/* Indicador de modificación */
+.modified-indicator {
+  margin-left: 5px;
+  font-size: 12px;
+  color: #ffc107;
+  cursor: help;
+}
+
+/* Formulario de edición */
+.edit-form {
+  padding: 10px;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.edit-field {
+  margin-bottom: 8px;
+}
+
+.edit-field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 3px;
+  color: var(--text-color);
+  font-size: 12px;
+}
+
+.edit-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-color);
+  background-color: var(--table-row-bg);
+  resize: vertical;
+}
+
+.edit-field textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Contenido del requisito con información adicional */
+.requirement-content .detail {
+  margin-bottom: 8px;
+}
+
+.requirement-content .justification,
+.requirement-content .discussion {
+  font-size: 12px;
+  color: var(--text-color);
+  opacity: 0.8;
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  background-color: rgba(0, 123, 255, 0.05);
+  border-left: 2px solid #007bff;
+  border-radius: 2px;
+}
+
+.requirement-content .modification-info {
+  font-size: 11px;
+  color: #ffc107;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Acciones de edición */
+.view-actions,
+.edit-actions {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.edit-actions {
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Botones de acción mejorados */
+.edit-button,
+.save-button,
+.cancel-button,
+.restore-button {
+  border: none;
+  padding: 6px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  min-width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.save-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #1e7e34;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #545b62;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+.restore-button {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.restore-button:hover {
+  background-color: #e0a800;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+}
+
+/* Animaciones */
+.edit-form {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive para formularios */
+@media (max-width: 768px) {
+  .edit-field textarea {
+    font-size: 14px;
+    padding: 8px;
+  }
+  
+  .edit-actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
