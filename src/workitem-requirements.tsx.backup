@@ -1,0 +1,897 @@
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import * as SDK from 'azure-devops-extension-sdk';
+import { CommonServiceIds, IHostPageLayoutService } from 'azure-devops-extension-api';
+import { IWorkItemFormService, WorkItemTrackingServiceIds } from 'azure-devops-extension-api/WorkItemTracking';
+import './workitem-requirements.css';
+import './child-requirements.css';
+
+// Interface para los requisitos de sostenibilidad (simplificada para esta vista)
+interface Requirement {
+  id: string;
+  displayCode: string;
+  parentId?: string;
+  children?: string[];
+  level?: number;
+  attrs: {
+    detail: string;
+    Justification?: string;
+    Discussion?: string;
+  };
+}
+
+// Funciones de storage específicas por work item
+class WorkItemStorage {
+  private static workItemId: string | null = null;
+
+  static setWorkItemId(id: string) {
+    this.workItemId = id;
+  }
+
+  static getStorageKey(key: string): string {
+    if (!this.workItemId) {
+      throw new Error('Work Item ID no está configurado');
+    }
+    return `workitem_${this.workItemId}_${key}`;
+  }
+
+  static getSelectedRequirements(): Requirement[] {
+    try {
+      const key = this.getStorageKey('selectedRequirements');
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Error al obtener requisitos seleccionados:', e);
+      return [];
+    }
+  }
+
+  static setSelectedRequirements(requirements: Requirement[]) {
+    try {
+      const key = this.getStorageKey('selectedRequirements');
+      localStorage.setItem(key, JSON.stringify(requirements));
+    } catch (e) {
+      console.error('Error al guardar requisitos seleccionados:', e);
+    }
+  }
+
+  static getRemovedRequirementIds(): string[] {
+    try {
+      const key = this.getStorageKey('removedRequirementIds');
+      const saved = localStorage.getItem(key);
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('Error al obtener IDs removidos:', e);
+      return [];
+    }
+  }
+
+  static setRemovedRequirementIds(ids: string[]) {
+    try {
+      const key = this.getStorageKey('removedRequirementIds');
+      localStorage.setItem(key, JSON.stringify(ids));
+    } catch (e) {
+      console.error('Error al guardar IDs removidos:', e);
+    }
+  }
+
+  static clearWorkItemData() {
+    if (!this.workItemId) return;
+    
+    try {
+      const selectedKey = this.getStorageKey('selectedRequirements');
+      const removedKey = this.getStorageKey('removedRequirementIds');
+      
+      localStorage.removeItem(selectedKey);
+      localStorage.removeItem(removedKey);
+    } catch (e) {
+      console.error('Error al limpiar datos del work item:', e);
+    }
+  }
+}
+
+// Componente para mostrar un requisito individual
+const RequirementItem: React.FC<{
+  requirement: Requirement;
+  allRequirements: Requirement[];
+  onRemove: (id: string) => void;
+  expanded?: boolean;
+}> = ({ requirement, allRequirements, onRemove, expanded = true }) => {
+  const [isExpanded, setIsExpanded] = React.useState(expanded);
+  
+  // Memorizar el cálculo de los hijos para evitar recálculos innecesarios
+  const childRequirements = React.useMemo(() => {
+    console.log(`Buscando hijos para requisito ${requirement.id}`);
+    
+    // SOLUCIÓN MEJORADA: Implementación más directa y agresiva para encontrar hijos
+    
+    // Función para normalizar identificadores para facilitar comparaciones
+    const normalizeId = (id: string): string => id.endsWith('.') ? id.substring(0, id.length - 1) : id;
+    const currentId = normalizeId(requirement.id);
+    
+    // Depuración detallada del requisito actual
+    console.log(`Requisito actual: ${requirement.id}`, {
+      normalizedId: currentId,
+      children: requirement.children || [],
+      parentId: requirement.parentId || 'none',
+      level: requirement.level || 0
+    });
+    
+    // Depuración de requisitos disponibles
+    console.log(`Requisitos disponibles (${allRequirements.length}):`, 
+      allRequirements.map(r => ({ id: r.id, parentId: r.parentId })));
+    
+    // Estructura para almacenar hijos sin duplicados
+    let children: Requirement[] = [];
+    let childIds = new Set<string>();
+    
+    // Función para agregar un hijo verificando duplicados
+    const addChild = (req: Requirement, source: string): void => {
+      if (!req || req.id === requirement.id) return;
+      
+      // No filtramos por removedIds aquí para diagnosticar si ese es el problema
+      
+      if (!childIds.has(req.id)) {
+        childIds.add(req.id);
+        children.push(req);
+        console.log(`${source}: Hijo encontrado para ${requirement.id}: ${req.id}`);
+      }
+    };
+    
+    // PASO 1: Verificar primero la propiedad children[] del requisito
+    if (requirement.children && Array.isArray(requirement.children) && requirement.children.length > 0) {
+      console.log(`El requisito ${requirement.id} tiene ${requirement.children.length} hijos definidos en children[]:`, requirement.children);
+      
+      requirement.children.forEach(childId => {
+        // Mejora: Búsqueda más flexible de hijos por ID (considerando diferentes formatos de ID)
+        const childReq = allRequirements.find(r => {
+          // Normalizar ambos IDs para comparación
+          const normalizedChildId = normalizeId(childId);
+          const normalizedReqId = normalizeId(r.id);
+          
+          // Comparación directa
+          if (normalizedReqId === normalizedChildId) return true;
+          
+          // Comparación con punto al final
+          if (normalizedReqId + '.' === normalizedChildId || normalizedReqId === normalizedChildId + '.') return true;
+          
+          // Comparación basada en el patrón del ID (para IDs como "Mod.1.1")
+          const reqParts = normalizedReqId.split('.');
+          const childParts = normalizedChildId.split('.');
+          
+          if (reqParts.length === childParts.length) {
+            // Verificar si todos los segmentos coinciden ignorando el punto final
+            return reqParts.every((part, i) => part === childParts[i] || 
+                                           part.endsWith('.') && part.slice(0, -1) === childParts[i] ||
+                                           childParts[i].endsWith('.') && childParts[i].slice(0, -1) === part);
+          }
+          
+          return false;
+        });
+        
+        if (childReq) {
+          addChild(childReq, "CHILDREN-ARRAY");
+          console.log(`Hijo encontrado correctamente: ${childReq.id} con detalle: ${childReq.attrs.detail}`);
+        } else {
+          console.warn(`No se encontró el hijo ${childId} referenciado en children[] de ${requirement.id}`);
+        }
+      });
+    } else {
+      console.log(`El requisito ${requirement.id} no tiene hijos definidos en children[]`);
+    }
+    
+    // PASO 2: Buscar hijos por parentId (más directo) con búsqueda mejorada
+    const childrenByParentId = allRequirements.filter(req => {
+      if (!req.parentId) return false;
+      
+      const normalizedParentId = normalizeId(req.parentId);
+      
+      // Comparación directa
+      if (normalizedParentId === currentId) return true;
+      
+      // Comparación con punto al final
+      if (normalizedParentId === currentId + '.' || normalizedParentId + '.' === currentId) return true;
+      
+      // Verificar si el parentId contiene el ID actual con o sin punto al final
+      const parentWithoutDot = normalizedParentId.endsWith('.') 
+        ? normalizedParentId.slice(0, -1) 
+        : normalizedParentId;
+      
+      const currentWithoutDot = currentId.endsWith('.')
+        ? currentId.slice(0, -1)
+        : currentId;
+        
+      return parentWithoutDot === currentWithoutDot;
+    });
+    
+    if (childrenByParentId.length > 0) {
+      console.log(`Se encontraron ${childrenByParentId.length} hijos por parentId para ${requirement.id}:`, 
+        childrenByParentId.map(r => ({ id: r.id, detail: r.attrs.detail })));
+      
+      childrenByParentId.forEach(childReq => {
+        addChild(childReq, "PARENT-ID");
+      });
+    } else {
+      console.log(`No se encontraron hijos por parentId para ${requirement.id}`);
+    }
+    
+    // PASO 3: Buscar por estructura de ID (como respaldo)
+    // Este enfoque busca IDs que tengan una estructura jerárquica
+    // Por ejemplo, si el ID actual es "Mod.1", buscar "Mod.1.1", "Mod.1.2", etc.
+    const idParts = currentId.split('.');
+    
+    // Solo si el ID actual tiene un formato reconocible 
+    if (idParts.length >= 1) {
+      console.log(`Buscando hijos por estructura de ID para ${requirement.id}`);
+      
+      // Búsqueda más flexible por patrón de ID
+      const childrenByIdPattern = allRequirements.filter(req => {
+        if (req.id === requirement.id) return false;
+        
+        const normalizedReqId = normalizeId(req.id);
+        const childIdParts = normalizedReqId.split('.');
+        
+        // Método 1: Verificar si el ID hijo comienza con el ID del padre seguido de un punto
+        if (normalizedReqId.startsWith(currentId + '.')) return true;
+        
+        // Método 2: Para IDs con estructura específica como "Mod.1.1" para "Mod.1"
+        if (childIdParts.length === idParts.length + 1) {
+          let isMatch = true;
+          for (let i = 0; i < idParts.length; i++) {
+            // Comparación más flexible permitiendo variaciones como puntos al final
+            const parentPart = idParts[i].endsWith('.') ? idParts[i].slice(0, -1) : idParts[i];
+            const childPart = childIdParts[i].endsWith('.') ? childIdParts[i].slice(0, -1) : childIdParts[i];
+            
+            if (parentPart !== childPart) {
+              isMatch = false;
+              break;
+            }
+          }
+          return isMatch;
+        }
+        
+        // Método 3: Para patrones específicos como "Mod.1.*" para requisitos estilo "Mod.1"
+        if (idParts.length === 2 && childIdParts.length === 3) {
+          if (idParts[0] === childIdParts[0] && idParts[1] === childIdParts[1]) {
+            return true;
+          }
+        }
+        
+        return false;
+      });
+      
+      if (childrenByIdPattern.length > 0) {
+        console.log(`Se encontraron ${childrenByIdPattern.length} hijos por patrón de ID para ${requirement.id}:`,
+          childrenByIdPattern.map(r => ({ id: r.id, detail: r.attrs.detail })));
+        
+        childrenByIdPattern.forEach(childReq => {
+          addChild(childReq, "ID-PATTERN");
+        });
+      } else {
+        console.log(`No se encontraron hijos por patrón de ID para ${requirement.id}`);
+      }
+    }
+    
+    // PASO 4: Buscar en sustainability_requirements.json para encontrar hijos reales
+    // antes de crear hijos artificiales como último recurso
+    if (children.length === 0 && idParts.length >= 1) {
+      console.log(`No se encontraron hijos para ${requirement.id}, buscando en sustainability_requirements.json`);
+      
+      // Primero buscar todos los posibles requisitos hijos en el conjunto completo de requisitos
+      const potentialChildrenByPrefix = allRequirements.filter(req => {
+        // No incluir el mismo requisito
+        if (req.id === requirement.id) return false;
+        
+        // Verificar si el ID del requisito comienza con el ID del requisito actual
+        // Ejemplo: para "Mod.1", buscar "Mod.1.1", "Mod.1.2", etc.
+        const normalizedReqId = normalizeId(req.id);
+        const normalizedCurrentId = normalizeId(requirement.id);
+        
+        return (normalizedReqId.startsWith(normalizedCurrentId + '.') || 
+                normalizedReqId.startsWith(normalizedCurrentId + '.'));
+      });
+      
+      // Si encontramos potenciales hijos, agregarlos
+      if (potentialChildrenByPrefix.length > 0) {
+        console.log(`Se encontraron ${potentialChildrenByPrefix.length} hijos potenciales por prefijo para ${requirement.id}`);
+        potentialChildrenByPrefix.forEach(childReq => {
+          addChild(childReq, "PREFIX-MATCHING");
+        });
+      } 
+      // Si aún no hay hijos y es un requisito de nivel superior conocido, crear artificiales solo como último recurso
+      else if (children.length === 0 && idParts.length === 2 && idParts[0].match(/^(Mod|Seg|Opt|Esc|Fia|Int)$/)) {
+        console.log(`Último recurso: Creando hijos artificiales para requisito de nivel superior ${requirement.id}`);
+        
+        const prefix = idParts[0];
+        const num = idParts[1];
+        
+        // Buscar primero en todo el conjunto de requisitos
+        const existingChildren = allRequirements.filter(req => {
+          const reqId = normalizeId(req.id);
+          // Buscar IDs como "Mod.1.1", "Mod.1.2" para un requisito "Mod.1"
+          const pattern = new RegExp(`^${prefix}\\.${num}\\.[0-9]+$`);
+          return pattern.test(reqId);
+        });
+        
+        if (existingChildren.length > 0) {
+          console.log(`Se encontraron ${existingChildren.length} hijos existentes para ${requirement.id}`);
+          existingChildren.forEach(child => addChild(child, "PATTERN-SEARCH"));
+        } else {
+          // Verificar si hay IDs eliminados previamente para no recrearlos
+          // Esta es la parte crucial que soluciona el problema de recreación de hijos eliminados
+          let removedIds: string[] = [];
+          try {
+            const removedIdsString = localStorage.getItem('removedRequirementIds') || '[]';
+            removedIds = JSON.parse(removedIdsString);
+          } catch (e) {
+            console.error('Error al leer IDs eliminados:', e);
+          }
+          
+          // Solo crear artificiales si no se encontraron existentes y no hay eliminados previos
+          console.log(`No se encontraron hijos existentes, verificando si hay eliminados antes de crear artificiales`);
+          
+          for (let i = 1; i <= 2; i++) {
+            const childId = `${prefix}.${num}.${i}`;
+            
+            // Verificar si este ID fue eliminado anteriormente
+            if (removedIds.includes(childId)) {
+              console.log(`No se recreará el hijo artificial ${childId} porque fue eliminado anteriormente`);
+              continue; // Saltar a la siguiente iteración
+            }
+            
+            // Ver si este hijo existe en allRequirements
+            const existingChild = allRequirements.find(r => 
+              normalizeId(r.id) === childId
+            );
+            
+            if (existingChild) {
+              addChild(existingChild, "AUTO-ARTIFICIAL-EXISTING");
+            } else {
+              // Crear un hijo artificial solo si no fue eliminado previamente
+              const artificialChild: Requirement = {
+                id: childId,
+                displayCode: childId + ".",
+                parentId: requirement.id,
+                children: [],
+                level: requirement.level ? requirement.level + 1 : 3,
+                attrs: {
+                  detail: `Hijo ${i} de ${requirement.id}`,
+                  Justification: `Requisito generado automáticamente`
+                }
+              };
+              
+              addChild(artificialChild, "AUTO-ARTIFICIAL-DEMO");
+            }
+          }
+        }
+      }
+    }
+    
+    // Ordenar los hijos por ID para una visualización consistente
+    children.sort((a, b) => {
+      const aId = normalizeId(a.id);
+      const bId = normalizeId(b.id);
+      return aId.localeCompare(bId);
+    });
+    
+    console.log(`Requisito ${requirement.id} tiene ${children.length} hijos:`, 
+                children.length > 0 ? children.map(r => r.id).join(', ') : "ninguno");
+    
+    return children;
+  }, [requirement.id, requirement.children, requirement.level, allRequirements]);
+
+  // Determinar si este requisito es expandible (tiene hijos)
+  const isExpandable = childRequirements.length > 0;
+  
+  const handleToggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  };
+
+  // Debug de renderizado
+  console.log(`Renderizando requisito ${requirement.id} con ${childRequirements.length} hijos. Expandido: ${isExpanded}`);
+  
+  return (
+    <>
+      <tr className="requirement-row" data-req-id={requirement.id}>
+        <td className="id-cell">
+          {isExpandable && (
+            <button 
+              className={`expand-button ${isExpanded ? 'expanded' : 'collapsed'}`}
+              onClick={handleToggleExpand}
+              aria-label={isExpanded ? "Collapse" : "Expand"}
+              type="button"
+            >
+              {isExpanded ? '-' : '+'}
+            </button>
+          )}
+          <span className="requirement-id">{requirement.displayCode || requirement.id}</span>
+        </td>
+        <td className="detail-cell">{requirement.attrs.detail}</td>
+        <td className="action-cell">
+          <button 
+            className="remove-button"
+            onClick={() => onRemove(requirement.id)}
+            title="Eliminar este requisito y sus hijos"
+          >
+            REMOVE
+          </button>
+        </td>
+      </tr>
+      
+      {/* Mostrar requisitos hijos si está expandido */}
+      {isExpanded && childRequirements && childRequirements.length > 0 && (
+        childRequirements.map(childReq => (
+          <tr key={childReq.id} className="child-requirement-row" data-req-id={childReq.id} data-parent-id={requirement.id}>
+            <td className="id-cell child-id">
+              <div className="child-connector">
+                <span className="child-indicator">└─</span>
+                <span className="requirement-id">{childReq.displayCode || childReq.id}</span>
+              </div>
+            </td>
+            <td className="detail-cell">{childReq.attrs.detail || `Detalle del requisito ${childReq.id}`}</td>
+            <td className="action-cell">
+              <button 
+                className="remove-button"
+                onClick={() => onRemove(childReq.id)}
+                title="Eliminar este requisito hijo"
+              >
+                REMOVE
+              </button>
+            </td>
+          </tr>
+        ))
+      )}
+    </>
+  );
+};
+
+const WorkItemRequirements: React.FC = () => {
+  const [requirements, setRequirements] = React.useState<Requirement[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [isDarkTheme, setIsDarkTheme] = React.useState(false);
+  const [workItemId, setWorkItemId] = React.useState<string | null>(null);
+
+  // Función para obtener el ID del work item actual
+  const getWorkItemId = React.useCallback(async () => {
+    try {
+      const workItemFormService = await SDK.getService<IWorkItemFormService>(WorkItemTrackingServiceIds.WorkItemFormService);
+      const workItemId = await workItemFormService.getId();
+      console.log('Work Item ID obtenido:', workItemId);
+      return workItemId.toString();
+    } catch (e) {
+      console.error('Error al obtener Work Item ID:', e);
+      // Fallback: usar timestamp para casos de desarrollo/testing
+      return `dev_${Date.now()}`;
+    }
+  }, []);
+
+  // Detectar tema de Azure DevOps
+  React.useEffect(() => {
+    // Intentar detectar el tema por el atributo 'data-theme' en el body
+    const checkTheme = () => {
+      const bodyTheme = document.body.getAttribute('data-theme');
+      const isDark = bodyTheme === 'dark' || 
+                     document.body.classList.contains('vss-dark') ||
+                     window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDarkTheme(isDark);
+      
+      // Aplicar clase al contenedor raíz para manejar tema
+      const rootElement = document.getElementById('root');
+      if (rootElement) {
+        rootElement.className = isDark ? 'dark-theme' : 'light-theme';
+      }
+    };
+    
+    checkTheme();
+    
+    // Observar cambios en el tema
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    
+    return () => observer.disconnect();
+  }, []);
+
+  // Función para monitorear cambios en localStorage (ahora específico por work item)
+  const handleStorageChange = React.useCallback(() => {
+    try {
+      if (!workItemId) {
+        console.log('Work Item ID no disponible para cargar requisitos');
+        return;
+      }
+
+      const savedReqs = WorkItemStorage.getSelectedRequirements();
+      if (savedReqs && savedReqs.length > 0) {
+        const currentIds = new Set(requirements.map(req => req.id));
+        const newIds = savedReqs.map((req: Requirement) => req.id);
+        
+        // Identificar requisitos añadidos nuevamente
+        const addedIds = newIds.filter((id: string) => !currentIds.has(id));
+        if (addedIds.length > 0) {
+          console.log("Requisitos añadidos nuevamente:", addedIds);
+        }
+        
+        // Actualizar los requisitos en el estado
+        setRequirements(savedReqs);
+        console.log("Requisitos actualizados para work item", workItemId, ":", savedReqs);
+        
+        // Limpiar la lista de requisitos eliminados para requisitos re-añadidos
+        try {
+          let removedIds = WorkItemStorage.getRemovedRequirementIds();
+          
+          if (removedIds.length > 0) {
+            const existingIds = new Set(savedReqs.map((req: Requirement) => req.id));
+            
+            const updatedRemovedIds = removedIds.filter(id => {
+              if (existingIds.has(id)) return false;
+              
+              for (const addedId of addedIds) {
+                if (id.startsWith(addedId + '.') && /\.\d+$/.test(id)) {
+                  return true;
+                }
+              }
+              
+              return true;
+            });
+            
+            if (updatedRemovedIds.length !== removedIds.length) {
+              console.log(`Actualizando lista de IDs eliminados para work item ${workItemId}: antes ${removedIds.length}, después ${updatedRemovedIds.length}`);
+              WorkItemStorage.setRemovedRequirementIds(updatedRemovedIds);
+            }
+          }
+        } catch (e) {
+          console.error('Error al actualizar la lista de IDs eliminados en handleStorageChange:', e);
+        }
+      } else {
+        // Si no hay requisitos guardados, inicializar con array vacío
+        console.log("No se encontraron requisitos guardados para work item", workItemId);
+        setRequirements([]);
+      }
+    } catch (err) {
+      console.error("Error al procesar cambios de requisitos:", err);
+    }
+  }, [workItemId, requirements]);
+
+  React.useEffect(() => {
+    const initializeAndLoad = async () => {
+      try {
+        // Inicializar el SDK
+        await SDK.init({ loaded: true, applyTheme: true });
+        console.log("SDK inicializado correctamente");
+        
+        // Obtener el ID del work item actual
+        const currentWorkItemId = await getWorkItemId();
+        setWorkItemId(currentWorkItemId);
+        
+        // Configurar el storage para este work item específico
+        WorkItemStorage.setWorkItemId(currentWorkItemId);
+        console.log("Work Item ID configurado:", currentWorkItemId);
+        
+        // Registrar un manejador para mensajes
+        SDK.register('requirements.updated', handleStorageChange);
+        
+        // Cargar requisitos específicos de este work item
+        const savedReqs = WorkItemStorage.getSelectedRequirements();
+        
+        if (savedReqs && savedReqs.length > 0) {
+          console.log(`Cargando ${savedReqs.length} requisitos guardados para work item ${currentWorkItemId}`);
+          
+          // Verificar que los datos son válidos
+          if (!Array.isArray(savedReqs)) {
+            console.error("Los datos cargados no son un array:", savedReqs);
+            setError("El formato de datos de requisitos es incorrecto");
+            return;
+          }
+          
+          setRequirements(savedReqs);
+          console.log("Requisitos cargados exitosamente para work item", currentWorkItemId);
+        } else {
+          // Nuevo work item - empezar con requisitos vacíos
+          console.log(`Nuevo work item ${currentWorkItemId} - iniciando con requisitos vacíos`);
+          setRequirements([]);
+        }
+        
+      } catch (err) {
+        console.error("Error durante la inicialización:", err);
+        setError("Error al inicializar la extensión: " + (err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAndLoad();
+  }, [getWorkItemId, handleStorageChange]);
+                console.log(`Requisito de primer nivel identificado: ${normalizedId} con parentId ${processed.parentId}`);
+                return processed;
+              }
+              
+              // Si es un requisito con puntos (como "Seg.1.1" o "Seg.1.1."), intentar deducir el parentId
+              if (idParts.length > 1) {
+                // Generar el ID del padre potencial
+                const potentialParentId = idParts.slice(0, idParts.length - 1).join('.');
+                
+                // Si ya tiene un parentId y no coincide con el potencial, mostrar advertencia pero mantenerlo
+                if (processed.parentId && normalizeId(processed.parentId) !== potentialParentId) {
+                  console.warn(`Advertencia: El parentId ${processed.parentId} no coincide con el potencial ${potentialParentId} para ${normalizedId}`);
+                } else if (!processed.parentId) {
+                  // Si no tiene parentId, asignarlo basado en la estructura del ID
+                  processed.parentId = potentialParentId;
+                  console.log(`Asignando parentId para ${normalizedId}: ${potentialParentId} (basado en estructura)`);
+                }
+              }
+              
+              return processed;
+            });
+            
+            // TERCER PASO: Reconstruir las relaciones de hijos basadas en parentId
+            // Para cada requisito, encontrar sus hijos y actualizar su array children[]
+            processedReqs.forEach(req => {
+              // Encontrar todos los hijos directos que tienen a este requisito como padre
+              const normalizedReqId = normalizeId(req.id);
+              
+              const childrenByParentId = processedReqs.filter(otherReq => {
+                if (!otherReq.parentId) return false;
+                
+                const normalizedParentId = normalizeId(otherReq.parentId);
+                return normalizedParentId === normalizedReqId;
+              });
+              
+              // Si se encontraron hijos, agregar sus IDs al array children[]
+              if (childrenByParentId.length > 0) {
+                req.children = childrenByParentId.map(child => child.id);
+                console.log(`Actualizados ${childrenByParentId.length} hijos para ${req.id}: ${req.children.join(', ')}`);
+              }
+            });
+            
+            setRequirements(processedReqs);
+            console.log("Requisitos procesados con jerarquía reconstruida:", processedReqs);
+            
+            // Debug: Comprobar la estructura de los datos
+            const topLevel = processedReqs.filter(r => {
+              // Requisitos de primer nivel son aquellos con ID del tipo "Mod.1", "Seg.1"
+              const normalizedId = normalizeId(r.id);
+              return normalizedId.match(/^[A-Za-z]+\.\d+$/);
+            });
+            console.log("Requisitos de nivel superior:", topLevel.map(r => r.id));
+            
+            // Debug: Comprobar relaciones padre-hijo de forma más completa
+            topLevel.forEach(parent => {
+              console.log(`Analizando hijos para ${parent.id}:`);
+              
+              // Hijos directos por parentId
+              const directChildren = processedReqs.filter(r => 
+                r.parentId && normalizeId(r.parentId) === normalizeId(parent.id)
+              );
+              
+              // Hijos en el array children[]
+              const childrenInArray = parent.children && Array.isArray(parent.children) 
+                ? parent.children.map(childId => 
+                  processedReqs.find(r => r.id === childId || normalizeId(r.id) === normalizeId(childId))
+                ).filter(Boolean)
+                : [];
+              
+              console.log(`- Por parentId: ${directChildren.length}`, directChildren.map(r => r.id));
+              console.log(`- En array children[]: ${childrenInArray.length}`, childrenInArray.map((r: any) => r.id));
+            });
+          } catch (parseErr) {
+            console.error("Error al analizar los requisitos guardados:", parseErr);
+            setError("Error al procesar los datos de requisitos");
+          }
+        } else {
+          console.log("No se encontraron requisitos guardados en localStorage");
+        }
+      } catch (err) {
+        console.error("Error al inicializar o cargar requisitos:", err);
+        setError("Error loading sustainability requirements");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAndLoad();
+
+    // Configurar un evento personalizado para escuchar cambios
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [handleStorageChange]);
+
+  const removeRequirement = (reqId: string) => {
+    console.log(`Eliminando requisito: ${reqId}`);
+    
+    // Función para obtener todos los IDs de hijos recursivamente
+    const getAllChildIds = (parentId: string): string[] => {
+      const directChildren = requirements.filter(r => {
+        // Verificar si es hijo directo por parentId
+        if (r.parentId === parentId) return true;
+        
+        // O por estructura de ID (por ejemplo, Mod.1.1 es hijo de Mod.1)
+        const parentParts = parentId.replace(/\.$/, '').split('.');
+        const childParts = r.id.replace(/\.$/, '').split('.');
+        
+        if (childParts.length !== parentParts.length + 1) return false;
+        
+        for (let i = 0; i < parentParts.length; i++) {
+          if (childParts[i] !== parentParts[i]) return false;
+        }
+        
+        return true;
+      });
+      
+      let allChildIds: string[] = [];
+      directChildren.forEach(child => {
+        allChildIds.push(child.id);
+        // Recursivamente buscar hijos de este hijo
+        allChildIds = [...allChildIds, ...getAllChildIds(child.id)];
+      });
+      
+      return allChildIds;
+    };
+    
+    // Obtener todos los IDs de requisitos a eliminar (el requisito seleccionado y sus hijos)
+    const childIds = getAllChildIds(reqId);
+    const idsToRemove = [reqId, ...childIds];
+    
+    console.log(`Requisitos a eliminar: ${reqId} y sus hijos:`, childIds);
+    
+    // Eliminar los requisitos de la lista
+    const updatedReqs = requirements.filter(req => !idsToRemove.includes(req.id));
+    
+    // También actualizar la propiedad children de cualquier padre afectado
+    updatedReqs.forEach(req => {
+      if (req.children && Array.isArray(req.children)) {
+        req.children = req.children.filter(childId => !idsToRemove.includes(childId));
+      }
+    });
+    
+    // Guardar los IDs eliminados para evitar que se generen de nuevo como artificiales
+    try {
+      // Obtener lista actual de IDs eliminados
+      let removedIdsString = localStorage.getItem('removedRequirementIds') || '[]';
+      let removedIds: string[] = JSON.parse(removedIdsString);
+      
+      // Agregar los nuevos IDs eliminados evitando duplicados
+      const combinedIds = [...removedIds];
+      idsToRemove.forEach(id => {
+        if (!combinedIds.includes(id)) {
+          combinedIds.push(id);
+        }
+      });
+      removedIds = combinedIds;
+      
+      // Guardar la lista actualizada
+      localStorage.setItem('removedRequirementIds', JSON.stringify(removedIds));
+      console.log('IDs de requisitos eliminados guardados:', removedIds);
+    } catch (e) {
+      console.error('Error guardando IDs eliminados:', e);
+    }
+    
+    setRequirements(updatedReqs);
+    
+    // Actualizar localStorage
+    try {
+      localStorage.setItem('selectedRequirements', JSON.stringify(updatedReqs));
+      console.log('Requisitos actualizados en localStorage después de eliminar:', updatedReqs);
+      
+      // Disparar evento para notificar a otros componentes del cambio
+      window.dispatchEvent(new Event('storage'));
+    } catch (e) {
+      console.error('Error guardando cambios:', e);
+    }
+  };
+
+  // Identificar requisitos de nivel superior analizando patrones de ID y parentId
+  const topLevelRequirements = React.useMemo(() => {
+    console.log("Identificando requisitos de nivel superior...");
+
+    // Primer paso: Identificar prefijos base (Mod, Seg, etc.)
+    const prefixes = new Set<string>();
+    requirements.forEach(req => {
+      const firstPart = req.id.split('.')[0];
+      if (firstPart) prefixes.add(firstPart);
+    });
+    
+    // Enfoque múltiple para identificar requisitos de nivel superior
+    
+    // 1. Requisitos que se consideran de nivel superior por su patrón de ID y parentId de prefijo
+    const topLevelPattern = /^[A-Za-z]+\.\d+\.?$/;  // Patrón para IDs como "Mod.1.", "Mod.1", "Seg.1.", "Seg.1"
+    const byPatternAndPrefix = requirements.filter(req => {
+      if (!topLevelPattern.test(req.id)) return false;
+      
+      // Si tiene un parentId y ese parentId es un prefijo base, es un requisito de nivel superior
+      const prefix = req.id.split('.')[0];
+      return req.parentId === prefix || !req.parentId;
+    });
+    
+    console.log(`Identificados ${byPatternAndPrefix.length} requisitos de nivel superior por patrón y prefijo:`, 
+                byPatternAndPrefix.map(r => r.id).join(', '));
+    
+    // 2. Los que tienen un patrón de nivel superior pero no tienen parentId
+    const byPattern = requirements.filter(req => 
+      topLevelPattern.test(req.id) && !req.parentId && 
+      !byPatternAndPrefix.some(r => r.id === req.id)
+    );
+    
+    console.log(`Identificados ${byPattern.length} requisitos de nivel superior adicionales por patrón:`, 
+                byPattern.map(r => r.id).join(', '));
+    
+    // 3. Determinación especial: requisitos que tienen el mismo formato que Mod.1, Seg.1, etc.
+    const specialPatternReqs = requirements.filter(req => {
+      // Verificar formato como "Mod.1" o "Seg.1"
+      if (!topLevelPattern.test(req.id)) return false;
+      
+      // Verificar que ninguno en los requisitos tenga a este como parentId
+      // (para asegurar que es un requisito de nivel superior)
+      const isParentOfOthers = requirements.some(otherReq => 
+        otherReq.parentId === req.id ||
+        (req.id.endsWith('.') && otherReq.parentId === req.id.substring(0, req.id.length - 1)) ||
+        (otherReq.parentId?.endsWith('.') && req.id === otherReq.parentId.substring(0, otherReq.parentId.length - 1))
+      );
+      
+      return isParentOfOthers;
+    });
+    
+    console.log(`Identificados ${specialPatternReqs.length} requisitos de nivel superior por relación de hijos:`, 
+                specialPatternReqs.map(r => r.id).join(', '));
+    
+    // Combinar todos los métodos y remover duplicados
+    const combined = [...byPatternAndPrefix, ...byPattern, ...specialPatternReqs];
+    const uniqueReqs = combined.filter((req, index, self) => 
+      index === self.findIndex(r => r.id === req.id)
+    );
+    
+    console.log(`Total ${uniqueReqs.length} requisitos de nivel superior únicos:`, 
+                uniqueReqs.map(r => r.id).join(', '));
+    
+    // Si no encontramos requisitos, usar un método más simple como fallback
+    if (uniqueReqs.length === 0) {
+      const simpleTopLevel = requirements.filter(req => topLevelPattern.test(req.id));
+      console.log(`Fallback: ${simpleTopLevel.length} requisitos de nivel superior por patrón simple:`,
+                 simpleTopLevel.map(r => r.id).join(', '));
+      return simpleTopLevel;
+    }
+    
+    return uniqueReqs;
+  }, [requirements]);
+
+  if (loading) return <div className="loading">Loading requirements...</div>;
+  if (error) return <div className="error">{error}</div>;
+
+  return (
+    <div className={`workitem-requirements-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+
+      {requirements.length > 0 ? (
+        <table className="requirements-table">
+          <thead>
+            <tr>
+              <th className="id-header">Id</th>
+              <th className="detail-header">Detail</th>
+              <th className="action-header"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {topLevelRequirements.map(req => (
+              <RequirementItem 
+                key={req.id} 
+                requirement={req} 
+                allRequirements={requirements}
+                onRemove={removeRequirement}
+              />
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div className="no-requirements">
+          <p>No sustainability requirements applied to this Work Item</p>
+          <p className="tip">Use the "CRETS4DevOps" tab to select requirements</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Renderizar el componente en el DOM
+ReactDOM.render(<WorkItemRequirements />, document.getElementById('root'));

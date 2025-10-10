@@ -1,0 +1,2299 @@
+[
+  {
+    "id": "Mod.1",
+    "displayCode": "Mod.1.",
+    "parentId": "Mod",
+    "children": [
+      "Mod.1.1",
+      "Mod.1.2",
+      "Mod.1.3",
+      "Mod.1.4",
+      "Mod.1.5"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.1.",
+      "detail": "Compatibility and Connectivity"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Mod.1.1",
+    "displayCode": "Mod.1.1.",
+    "parentId": "Mod.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.1.1.",
+      "detail": "The software must utilise standardised APIs (Application Programming Interfaces) and communication protocols to ensure interoperability with other applications. For example, RESTful APIs, SOAP, gRPC, and data transfer protocols such as HTTP or HTTPS."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Mod.1.2",
+    "displayCode": "Mod.1.2.",
+    "parentId": "Mod.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.1.2.",
+      "detail": "Common and widely accepted data formats (JSON, XML, CSV) should be used to ensure that data can be easily exchanged and understood by other systems."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Mod.1.3",
+    "displayCode": "Mod.1.3.",
+    "parentId": "Mod.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.1.3.",
+      "detail": "Regression testing should be carried out to ensure that new versions of the software do not introduce errors or compatibility issues with previous versions. Continuous Integration (CI) tools such as Jenkins, CircleCI, or GitHub Actions may be used."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Mod.1.4",
+    "displayCode": "Mod.1.4.",
+    "parentId": "Mod.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.1.4.",
+      "detail": "Network monitoring tools such as Nagios and Zabbix should be implemented to supervise connectivity and the performance of communications between systems."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Mod.1.5",
+    "displayCode": "Mod.1.5.",
+    "parentId": "Mod.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.1.5.",
+      "detail": "Active connections and network resources must be managed to ensure efficient operation. This includes the use of patterns such as persistent connection and handling of pending connections to improve performance."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Mod.2",
+    "displayCode": "Mod.2.",
+    "parentId": "Mod",
+    "children": [
+      "Mod.2.1",
+      "Mod.2.2",
+      "Mod.2.3",
+      "Mod.2.4",
+      "Mod.2.5"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.2.",
+      "detail": "Integration and Updating"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Mod.2.1",
+    "displayCode": "Mod.2.1.",
+    "parentId": "Mod.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.2.1.",
+      "detail": "Integration manuals and guides should be created to clearly explain how to add new components and services to the existing system."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Mod.2.2",
+    "displayCode": "Mod.2.2.",
+    "parentId": "Mod.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.2.2.",
+      "detail": "The system should be divided into independent microservices that communicate with each other via APIs. This allows each microservice to be developed, deployed, and scaled autonomously."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Mod.2.3",
+    "displayCode": "Mod.2.3.",
+    "parentId": "Mod.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.2.3.",
+      "detail": "Configuration management systems should be implemented to manage and version changes in both infrastructure and software, facilitating updates and enabling rollbacks if necessary."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Mod.2.4",
+    "displayCode": "Mod.2.4.",
+    "parentId": "Mod.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.2.4.",
+      "detail": "Regression tests should be implemented to ensure that updates do not introduce errors or affect existing functionalities."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Mod.2.5",
+    "displayCode": "Mod.2.5.",
+    "parentId": "Mod.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Mod.2.5.",
+      "detail": "CI/CD pipelines should be configured using tools such as Jenkins, GitLab CI, or GitHub Actions."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Esc.1",
+    "displayCode": "Esc.1.",
+    "parentId": "Esc",
+    "children": [
+      "Esc.1.1",
+      "Esc.1.2"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.1.",
+      "detail": "Design and Implementation Process"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Esc.1.1",
+    "displayCode": "Esc.1.1.",
+    "parentId": "Esc.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.1.1.",
+      "detail": "Programmers must write efficient algorithms."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Esc.1.2",
+    "displayCode": "Esc.1.2.",
+    "parentId": "Esc.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.1.2.",
+      "detail": "The software architecture should have as few layers as possible.",
+      "Justification": "The use of dynamic libraries, independent modules, or any other software system that adds layers to the final system architecture increases complexity and, by extension, the entropy of the software."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Esc.2",
+    "displayCode": "Esc.2.",
+    "parentId": "Esc",
+    "children": [
+      "Esc.2.1",
+      "Esc.2.2"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.2.",
+      "detail": "Green Analysis Process"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Esc.2.1",
+    "displayCode": "Esc.2.1.",
+    "parentId": "Esc.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.2.1.",
+      "detail": "High energy-efficiency hardware should be utilised to minimise energy consumption as capacity increases."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Esc.2.2",
+    "displayCode": "Esc.2.2.",
+    "parentId": "Esc.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.2.2.",
+      "detail": "Energy management policies should be implemented, such as the use of low-power modes and CPU frequency adjustment."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Esc.3",
+    "displayCode": "Esc.3.",
+    "parentId": "Esc",
+    "children": [
+      "Esc.3.1",
+      "Esc.3.2",
+      "Esc.3.3"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.3.",
+      "detail": "Load Distribution"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Esc.3.1",
+    "displayCode": "Esc.3.1.",
+    "parentId": "Esc.3",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.3.1.",
+      "detail": "Load balancing techniques should be employed to distribute processes evenly across multiple servers, optimising resource usage."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Esc.3.2",
+    "displayCode": "Esc.3.2.",
+    "parentId": "Esc.3",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.3.2.",
+      "detail": "A microservices architecture should be implemented to allow different parts of the application to be scaled independently."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Esc.3.3",
+    "displayCode": "Esc.3.3.",
+    "parentId": "Esc.3",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Esc.3.3.",
+      "detail": "Continuous monitoring systems and scenario analysis should be implemented to anticipate demand and dynamically adjust capacity, thereby avoiding system saturation."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fle.1",
+    "displayCode": "Fle.1.",
+    "parentId": "Fle",
+    "children": [
+      "Fle.1.1",
+      "Fle.1.2",
+      "Fle.1.3",
+      "Fle.1.4"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fle.1.",
+      "detail": "Agile Methodologies"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Fle.1.1",
+    "displayCode": "Fle.1.1.",
+    "parentId": "Fle.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fle.1.1.",
+      "detail": "Create and maintain a library of reusable components that can be integrated into different projects, thereby promoting efficiency and sustainability."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fle.1.2",
+    "displayCode": "Fle.1.2.",
+    "parentId": "Fle.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fle.1.2.",
+      "detail": "Implement agile methodologies such as Scrum, which enable short iterations with continuous requirements reviews."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fle.1.3",
+    "displayCode": "Fle.1.3.",
+    "parentId": "Fle.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fle.1.3.",
+      "detail": "Establish change control processes that include the assessment of the impact of changes on requirements."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fle.1.4",
+    "displayCode": "Fle.1.4.",
+    "parentId": "Fle.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fle.1.4.",
+      "detail": "Use techniques that allow requirements to be dynamically prioritised and enable the identification of critical requirements according to changes."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Reu.1",
+    "displayCode": "Reu.1.",
+    "parentId": "Reu",
+    "children": [
+      "Reu.1.1"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.1.",
+      "detail": "Elimination Process"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Reu.1.1",
+    "displayCode": "Reu.1.1.",
+    "parentId": "Reu.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.1.1.",
+      "detail": "When a product or service is retired, the code must be preserved for potential reuse in future projects.",
+      "Justification": "This will minimise development costs.",
+      "Discussion": "Code reuse for other projects should not be limited to this process; it is also possible (and advisable) to do so during development and deployment."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Reu.2",
+    "displayCode": "Reu.2.",
+    "parentId": "Reu",
+    "children": [
+      "Reu.2.1",
+      "Reu.2.2",
+      "Reu.2.3"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.2.",
+      "detail": "Component Library"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Reu.2.1",
+    "displayCode": "Reu.2.1.",
+    "parentId": "Reu.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.2.1.",
+      "detail": "Develop a component library within a technological tool such as GitHub, enabling components to be reused across multiple applications and projects."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Reu.2.2",
+    "displayCode": "Reu.2.2.",
+    "parentId": "Reu.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.2.2.",
+      "detail": "Create standards for the creation and usage of reusable components to ensure their consistency."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Reu.2.3",
+    "displayCode": "Reu.2.3.",
+    "parentId": "Reu.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.2.3.",
+      "detail": "Create and maintain documentation for the developed components to facilitate their reuse."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Reu.3",
+    "displayCode": "Reu.3.",
+    "parentId": "Reu",
+    "children": [
+      "Reu.3.1",
+      "Reu.3.2"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.3.",
+      "detail": "Use of Templates"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Reu.3.1",
+    "displayCode": "Reu.3.1.",
+    "parentId": "Reu.3",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.3.1.",
+      "detail": "Create and utilise templates that can be adapted to different projects."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Reu.3.2",
+    "displayCode": "Reu.3.2.",
+    "parentId": "Reu.3",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.3.2.",
+      "detail": "Develop or adapt frameworks that facilitate the construction of reusable applications."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Reu.4",
+    "displayCode": "Reu.4.",
+    "parentId": "Reu",
+    "children": [
+      "Reu.4.1",
+      "Reu.4.2"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.4.",
+      "detail": "Change Control"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Reu.4.1",
+    "displayCode": "Reu.4.1.",
+    "parentId": "Reu.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.4.1.",
+      "detail": "Create a versioning system for reusable components, allowing for improvements and corrections of identified errors to be easily integrated."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Reu.4.2",
+    "displayCode": "Reu.4.2.",
+    "parentId": "Reu.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Reu.4.2.",
+      "detail": "Keep the change history up to date."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.1",
+    "displayCode": "Man.1.",
+    "parentId": "Man",
+    "children": [
+      "Man.1.1",
+      "Man.1.2",
+      "Man.1.3"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.1.",
+      "detail": "Maintenance Process"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Man.1.1",
+    "displayCode": "Man.1.1.",
+    "parentId": "Man.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.1.1.",
+      "detail": "The developed code must be readable.",
+      "Justification": "If a programme is easy to understand, it will be quicker, easier, and more energy-efficient to make changes to it."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.1.2",
+    "displayCode": "Man.1.2.",
+    "parentId": "Man.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.1.2.",
+      "detail": "Code documentation must always be available and consistent with the actual code."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.1.3",
+    "displayCode": "Man.1.3.",
+    "parentId": "Man.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.1.3.",
+      "detail": "Security updates must be created to prevent potential software system failures."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.2",
+    "displayCode": "Man.2.",
+    "parentId": "Man",
+    "children": [],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.2.",
+      "detail": "Use of Open Source Programmes and Development Environments",
+      "Justification": "These types of programmes are not developed by companies solely seeking profit, but are maintained, in most cases, by a community of developers aiming to eliminate errors and improve the product. The difference lies in the fact that companies will seek to sell new versions, always intending to create a new product rather than maintain the current one."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Man.3",
+    "displayCode": "Man.3.",
+    "parentId": "Man",
+    "children": [
+      "Man.3.1"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.3.",
+      "detail": "Divergent Change"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Man.3.1",
+    "displayCode": "Man.3.1.",
+    "parentId": "Man.3",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.3.1.",
+      "detail": "Apply the \"Extract Class\" or \"Extract Superclass\" refactoring when many changes need to be made to a single class to introduce new functionality.",
+      "Justification": "This improves code organisation, reduces duplicated code, and simplifies maintenance."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.4",
+    "displayCode": "Man.4.",
+    "parentId": "Man",
+    "children": [
+      "Man.4.1"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.4.",
+      "detail": "Shotgun Surgery"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Man.4.1",
+    "displayCode": "Man.4.1.",
+    "parentId": "Man.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.4.1.",
+      "detail": "Apply the \"Move Field\" and \"Move Method\" refactorings to an appropriate class (created for this purpose if necessary) when a small change in one class requires modifications in other classes and methods.",
+      "Justification": "This improves code organisation, reduces duplicated code, and simplifies maintenance."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.5",
+    "displayCode": "Man.5.",
+    "parentId": "Man",
+    "children": [
+      "Man.5.1"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.5.",
+      "detail": "Feature Envy"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Man.5.1",
+    "displayCode": "Man.5.1.",
+    "parentId": "Man.5",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.5.1.",
+      "detail": "Apply the \"Move Method\" refactoring if possible, or \"Extract Method\" if only part of the code accesses data from another class, when a method is more interested in another class than its own (e.g. reads attributes, data, etc.).",
+      "Justification": "There is less duplicated code and code organisation is improved by bringing methods that manage data closer to those that require them."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.6",
+    "displayCode": "Man.6.",
+    "parentId": "Man",
+    "children": [
+      "Man.6.1"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.6.",
+      "detail": "Primitive Obsession"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Man.6.1",
+    "displayCode": "Man.6.1.",
+    "parentId": "Man.6",
+    "children": [
+      "Man.6.1.1",
+      "Man.6.1.2"
+    ],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.6.1.",
+      "detail": "Avoid using primitive data types to represent states, objects, or store information."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.6.1.1",
+    "displayCode": "Man.6.1.1.",
+    "parentId": "Man.6.1",
+    "children": [],
+    "level": 4,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.6.1.1.",
+      "detail": "Implement classes that group primitive data types so that an object represents the information."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.6.1.2",
+    "displayCode": "Man.6.1.2.",
+    "parentId": "Man.6.1",
+    "children": [],
+    "level": 4,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.6.1.2.",
+      "detail": "If variables encode complex data, try to replace them with classes, subclasses, or by using the State/Strategy patterns.",
+      "Justification": "The code becomes more flexible and its comprehensibility increases."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Man.7",
+    "displayCode": "Man.7.",
+    "parentId": "Man",
+    "children": [
+      "Man.7.1"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.7.",
+      "detail": "Data Class"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Man.7.1",
+    "displayCode": "Man.7.1.",
+    "parentId": "Man.7",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Man.7.1.",
+      "detail": "The attributes of a data class (which only has attributes and get/set methods) should only be modified using the methods provided by the class.",
+      "Justification": "This improves code comprehensibility."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.1",
+    "displayCode": "Fia.1.",
+    "parentId": "Fia",
+    "children": [
+      "Fia.1.1",
+      "Fia.1.2",
+      "Fia.1.3",
+      "Fia.1.4",
+      "Fia.1.5"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.1.",
+      "detail": "The F.I.R.S.T. Rules must be applied to all developed tests."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Fia.1.1",
+    "displayCode": "Fia.1.1.",
+    "parentId": "Fia.1",
+    "children": [
+      "Fia.1.1.1"
+    ],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.1.1.",
+      "detail": "Fast: Tests shall be fast."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.1.1.1",
+    "displayCode": "Fia.1.1.1.",
+    "parentId": "Fia.1.1",
+    "children": [],
+    "level": 4,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.1.1.1.",
+      "detail": "If they cannot be executed within an acceptable time frame, they should be scheduled to run less frequently.",
+      "Discussion": "Tests should be run as frequently as possible, provided their execution does not result in excessive resource consumption and, consequently, higher energy usage. If tests require significant resources to execute, they should be scheduled for less frequent execution. This aims to strike a balance between execution frequency and energy consumption."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.1.2",
+    "displayCode": "Fia.1.2.",
+    "parentId": "Fia.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.1.2.",
+      "detail": "Independent: A test must not depend on the execution of any other test."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.1.3",
+    "displayCode": "Fia.1.3.",
+    "parentId": "Fia.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.1.3.",
+      "detail": "Repeatable: Tests should be programmed to run in any environment and at any time."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.1.4",
+    "displayCode": "Fia.1.4.",
+    "parentId": "Fia.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.1.4.",
+      "detail": "Automatic validation: Tests must return only a boolean output: pass or fail."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.1.5",
+    "displayCode": "Fia.1.5.",
+    "parentId": "Fia.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.1.5.",
+      "detail": "Timely: Tests should be written just before the production code that will fulfil them."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.2",
+    "displayCode": "Fia.2.",
+    "parentId": "Fia",
+    "children": [
+      "Fia.2.1",
+      "Fia.2.2"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.2.",
+      "detail": "Recyclability Process"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Fia.2.1",
+    "displayCode": "Fia.2.1.",
+    "parentId": "Fia.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.2.1.",
+      "detail": "If the product or service ceases to function, mechanisms must be in place to assist the user in repairing it."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.2.2",
+    "displayCode": "Fia.2.2.",
+    "parentId": "Fia.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.2.2.",
+      "detail": "A mechanism for collecting user feedback on product durability should be implemented, based on surveys."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.3",
+    "displayCode": "Fia.3.",
+    "parentId": "Fia",
+    "children": [],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.3.",
+      "detail": "If there is a process running that requires between 0.2 and 1 second, a loading screen with a waiting message must be implemented."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Fia.4",
+    "displayCode": "Fia.4.",
+    "parentId": "Fia",
+    "children": [
+      "Fia.4.1",
+      "Fia.4.2",
+      "Fia.4.3"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.4.",
+      "detail": "Fonts and Typography"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Fia.4.1",
+    "displayCode": "Fia.4.1.",
+    "parentId": "Fia.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.4.1.",
+      "detail": "Use a maximum of two different fonts in your service."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.4.2",
+    "displayCode": "Fia.4.2.",
+    "parentId": "Fia.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.4.2.",
+      "detail": "Use fonts optimised for screen display rather than print, such as Georgia or Verdana."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Fia.4.3",
+    "displayCode": "Fia.4.3.",
+    "parentId": "Fia.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Fia.4.3.",
+      "detail": "Use a maximum of three different text font sizes."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.1",
+    "displayCode": "Seg.1.",
+    "parentId": "Seg",
+    "children": [
+      "Seg.1.1",
+      "Seg.1.2",
+      "Seg.1.3",
+      "Seg.1.4",
+      "Seg.1.5",
+      "Seg.1.6"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.1.",
+      "detail": "Credentials"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Seg.1.1",
+    "displayCode": "Seg.1.1.",
+    "parentId": "Seg.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.1.1.",
+      "detail": "Users must log in with a unique and secure username and password."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.1.2",
+    "displayCode": "Seg.1.2.",
+    "parentId": "Seg.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.1.2.",
+      "detail": "Passwords must comply with complexity requirements (minimum length, combination of letters, numbers, and special characters), and should be changed periodically."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.1.3",
+    "displayCode": "Seg.1.3.",
+    "parentId": "Seg.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.1.3.",
+      "detail": "When using mobile applications, two-step authentication must be implemented (via SMS message or email)."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.1.4",
+    "displayCode": "Seg.1.4.",
+    "parentId": "Seg.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.1.4.",
+      "detail": "All mobile devices used must be authorised and registered by the system administrator."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.1.5",
+    "displayCode": "Seg.1.5.",
+    "parentId": "Seg.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.1.5.",
+      "detail": "Training should be provided on practices to protect users? credentials."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.1.6",
+    "displayCode": "Seg.1.6.",
+    "parentId": "Seg.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.1.6.",
+      "detail": "Continuous audits of access to software and servers should be conducted."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.2",
+    "displayCode": "Seg.2.",
+    "parentId": "Seg",
+    "children": [],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.2.",
+      "detail": "The Principle of Information Hiding must be applied: the implementation details of a module should be hidden from other modules and only accessed through the public interface of that module."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Seg.3",
+    "displayCode": "Seg.3.",
+    "parentId": "Seg",
+    "children": [],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.3.",
+      "detail": "If the application or service is to be developed following the Object-Oriented Programming paradigm, the Law of Demeter must be applied: a method f of class C should only call methods of C, of an object created (or passed as an argument) by f, and of an instance variable of C."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Seg.4",
+    "displayCode": "Seg.4.",
+    "parentId": "Seg",
+    "children": [
+      "Seg.4.1",
+      "Seg.4.2",
+      "Seg.4.3",
+      "Seg.4.4"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.4.",
+      "detail": "Data Validation"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Seg.4.1",
+    "displayCode": "Seg.4.1.",
+    "parentId": "Seg.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.4.1.",
+      "detail": "Mechanisms for validating and controlling input data must be implemented to ensure they are correct and free from inconsistencies."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.4.2",
+    "displayCode": "Seg.4.2.",
+    "parentId": "Seg.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.4.2.",
+      "detail": "Digital signatures should be used to verify the integrity of data and ensure it has not been modified without authorisation."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.4.3",
+    "displayCode": "Seg.4.3.",
+    "parentId": "Seg.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.4.3.",
+      "detail": "Data must be encrypted during transfer and storage, protected from unauthorised access and data theft."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Seg.4.4",
+    "displayCode": "Seg.4.4.",
+    "parentId": "Seg.4",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Seg.4.4.",
+      "detail": "Strong encryption algorithms, such as AES-256, must be used to guarantee the protection of critical information."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Int.1",
+    "displayCode": "Int.1.",
+    "parentId": "Int",
+    "children": [
+      "Int.1.1",
+      "Int.1.2",
+      "Int.1.3"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Int.1.",
+      "detail": "Open Standards"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Int.1.1",
+    "displayCode": "Int.1.1.",
+    "parentId": "Int.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Int.1.1.",
+      "detail": "Implement open standards such as HTTP, HTTPS, REST, SOAP, JSON, XML, and other protocols that enable compatibility between different systems."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Int.1.2",
+    "displayCode": "Int.1.2.",
+    "parentId": "Int.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Int.1.2.",
+      "detail": "Use standardised data formats, such as JSON, XML, or CSV, to facilitate the exchange of information between disparate systems."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Int.1.3",
+    "displayCode": "Int.1.3.",
+    "parentId": "Int.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Int.1.3.",
+      "detail": "Develop well-defined and documented APIs to enable other systems to interact with the software in a clear and straightforward manner."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Int.2",
+    "displayCode": "Int.2.",
+    "parentId": "Int",
+    "children": [
+      "Int.2.1",
+      "Int.2.2",
+      "Int.2.3"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Int.2.",
+      "detail": "Continuous Monitoring"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Int.2.1",
+    "displayCode": "Int.2.1.",
+    "parentId": "Int.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Int.2.1.",
+      "detail": "Implement continuous monitoring systems to oversee the interoperability and performance of the systems, detecting any issues."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Int.2.2",
+    "displayCode": "Int.2.2.",
+    "parentId": "Int.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Int.2.2.",
+      "detail": "Configure alerts and notifications to inform administrators of any interoperability issues."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Int.2.3",
+    "displayCode": "Int.2.3.",
+    "parentId": "Int.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Int.2.3.",
+      "detail": "Provide technical support to assist in resolving interoperability problems and to facilitate the continuous integration of new systems."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Efi.1",
+    "displayCode": "Efi.1.",
+    "parentId": "Efi",
+    "children": [
+      "Efi.1.1"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.1.",
+      "detail": "Frameworks"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Efi.1.1",
+    "displayCode": "Efi.1.1.",
+    "parentId": "Efi.1",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.1.1.",
+      "detail": "Different profiles or modes should be created to save energy by switching off or hibernating applications that are not in use during periods of inactivity."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Efi.2",
+    "displayCode": "Efi.2.",
+    "parentId": "Efi",
+    "children": [
+      "Efi.2.1"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.2.",
+      "detail": "Green Computing"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Efi.2.1",
+    "displayCode": "Efi.2.1.",
+    "parentId": "Efi.2",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.2.1.",
+      "detail": "If the system needs to activate external devices or peripherals, it should be programmed so that they are only activated when required.",
+      "Justification": "This will prevent excessive use and reduce the energy cost of keeping them active when not in use."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Efi.3",
+    "displayCode": "Efi.3.",
+    "parentId": "Efi",
+    "children": [
+      "Efi.3.1"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.3.",
+      "detail": "Performance Metrics"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Efi.3.1",
+    "displayCode": "Efi.3.1.",
+    "parentId": "Efi.3",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.3.1.",
+      "detail": "CPU usage frequency information should be used to quantify the energy dissipation that occurs during development."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Efi.4",
+    "displayCode": "Efi.4.",
+    "parentId": "Efi",
+    "children": [],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.4.",
+      "detail": "A mechanism for shutting down or hibernating development systems after a period of inactivity should be implemented."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Efi.5",
+    "displayCode": "Efi.5.",
+    "parentId": "Efi",
+    "children": [],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.5.",
+      "detail": "If such a shutdown or hibernation system is not possible, a plain white screensaver, without text or graphics, should be used on systems with cathode ray or LCD display technology.",
+      "Justification": "Screensavers without text or graphics generate fewer connections with the GPU, reducing energy consumption."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Efi.6",
+    "displayCode": "Efi.6.",
+    "parentId": "Efi",
+    "children": [],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.6.",
+      "detail": "If such a shutdown or hibernation system is not possible, a plain black screensaver, without text or graphics, should be used on systems with OLED technology.",
+      "Justification": "With OLED technology, each pixel emits its own light, so if black is displayed, no pixels are activated."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Efi.7",
+    "displayCode": "Efi.7.",
+    "parentId": "Efi",
+    "children": [],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.7.",
+      "detail": "If application users? monitors use cathode ray or LCD technology, white should be used for loading screens."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Efi.8",
+    "displayCode": "Efi.8.",
+    "parentId": "Efi",
+    "children": [],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.8.",
+      "detail": "If application users? monitors use OLED technology, black should be used for loading screens."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Efi.9",
+    "displayCode": "Efi.9.",
+    "parentId": "Efi",
+    "children": [
+      "Efi.9.1",
+      "Efi.9.2",
+      "Efi.9.3",
+      "Efi.9.4"
+    ],
+    "level": 2,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.9.",
+      "detail": "Image Representation"
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": false
+  },
+  {
+    "id": "Efi.9.1",
+    "displayCode": "Efi.9.1.",
+    "parentId": "Efi.9",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.9.1.",
+      "detail": "If it is necessary to display a diagram or flat graphic that does not need to be scaled, the PNG or GIF format should be used."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Efi.9.2",
+    "displayCode": "Efi.9.2.",
+    "parentId": "Efi.9",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.9.2.",
+      "detail": "The JPG format should be used for photographs."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Efi.9.3",
+    "displayCode": "Efi.9.3.",
+    "parentId": "Efi.9",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.9.3.",
+      "detail": "The SVG format should be used to maintain sharpness for scalable graphics."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  },
+  {
+    "id": "Efi.9.4",
+    "displayCode": "Efi.9.4.",
+    "parentId": "Efi.9",
+    "children": [],
+    "level": 3,
+    "title": null,
+    "description": null,
+    "tags": null,
+    "dimension": null,
+    "attrs": {
+      "Id": "Efi.9.4.",
+      "detail": "CSS Sprites should be used instead of JPG images to display navigation buttons and icons.",
+      "Justification": "Browsers cache CSS images (such as back/forward navigation arrows, classic home page icons, icons for save, print, etc.), thus eliminating the HTTP requests that the browser would otherwise need to make for server-hosted images."
+    },
+    "_meta": {
+      "source_file": "REquisitos de sostenibilidad.csv",
+      "identifier_column": "Id"
+    },
+    "hasParentInDataset": true
+  }
+]

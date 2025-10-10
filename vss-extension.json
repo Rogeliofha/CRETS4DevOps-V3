@@ -1,0 +1,79 @@
+{
+  "manifestVersion": 1,
+  "id": "plugin-crets-v2",
+  "publisher": "rogeliofha",
+  "version": "2.5.2",
+  "name": "CRETS4DevOps V2",
+  "description": "CRETS4DevOps V2 - Enhanced extension for advanced sustainability requirements management with independent work item support",
+  "public": false,
+  "categories": ["Azure Boards"],
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "scopes": ["vso.work", "vso.code", "vso.build", "vso.project"],
+  "icons": {
+    "default": "img/logo.png"
+  },
+  "content": {
+    "details": {
+      "path": "overview.md"
+    }
+  },
+  "files": [
+    {
+      "path": "dist",
+      "addressable": true,
+      "packagePath": "dist",
+      "fileMatch": "!(*.vsix)"
+    },
+    {
+      "path": "img",
+      "addressable": true
+    }
+  ],
+  "contributions": [
+    {
+      "id": "sustainability-requirements-tab",
+      "type": "ms.vss-web.hub",
+      "description": "Sustainability requirements management",
+      "targets": [
+        "ms.vss-web.project-hub-groups-collection"
+      ],
+      "properties": {
+        "name": "CRETS4DevOps V2",
+        "uri": "dist/sustainability-requirements.html",
+        "icon": "img/sustainability.png",
+        "order": 100
+      }
+    },
+    {
+      "id": "sustainability-requirements-workitem-tab",
+      "type": "ms.vss-work-web.work-item-form-page",
+      "description": "Sustainability requirements in work items",
+      "targets": [
+        "ms.vss-work-web.work-item-form"
+      ],
+      "properties": {
+        "name": "CRETS4DevOps V2",
+        "uri": "dist/sustainability-requirements.html"
+      }
+    },
+    {
+      "id": "sustainability-requirements-workitem-section",
+      "type": "ms.vss-work-web.work-item-form-group",
+      "description": "Section to display applied sustainability requirements",
+      "targets": [
+        "ms.vss-work-web.work-item-form"
+      ],
+      "properties": {
+        "name": "Sustainability Requirements",
+        "uri": "dist/workitem-requirements.html",
+        "height": 500,
+        "width": 950
+      }
+    }
+  ]
+}
+
