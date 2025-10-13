@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRETS4DevOps - Arquitectura del Sistema</title>
+    <title>CRETS4DevOps V2 - System Architecture</title>
     <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
     <style>
         body {
@@ -13,7 +13,7 @@
             background-color: #f5f5f5;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             padding: 30px;
@@ -29,6 +29,18 @@
             color: #323130;
             border-bottom: 2px solid #0078d4;
             padding-bottom: 10px;
+        }
+        h3 {
+            color: #605e5c;
+            margin-top: 25px;
+        }
+        .version-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
         }
         .diagram-container {
             margin: 30px 0;
@@ -77,137 +89,299 @@
             color: #107c10;
             font-weight: bold;
         }
-        /* Estilos para los nodos del diagrama */
+        .new-features {
+            background: #fff4e6;
+            border-left: 4px solid #ff8c00;
+        }
+        .new-features li:before {
+            content: "🆕 ";
+            color: #ff8c00;
+        }
+        .architecture-evolution {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4169e1;
+        }
+        .version-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .version-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #0078d4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .version-number {
+            font-weight: bold;
+            color: #0078d4;
+            font-size: 1.1em;
+        }
         .diagram-container .mermaid {
             font-family: 'Segoe UI', sans-serif;
         }
-        /* Agregar iconos como pseudo-elementos */
-        .icon-user::before { content: "👤 "; }
-        .icon-azure::before { content: "🌐 "; }
-        .icon-extension::before { content: "📱 "; }
-        .icon-react::before { content: "⚛️ "; }
-        .icon-data::before { content: "💾 "; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🌱 CRETS4DevOps - Arquitectura del Sistema</h1>
+        <h1>🌱 CRETS4DevOps V2 - Advanced System Architecture <span class="version-badge">v2.5.2</span></h1>
         
-        <h2>Diagrama de Arquitectura Principal</h2>
+        <div class="architecture-evolution">
+            <h3>📈 Architecture Evolution Summary</h3>
+            <p><strong>CRETS4DevOps V2</strong> represents a significant evolution from basic sustainability requirements management to a sophisticated, independent, and user-friendly system with complete Work Item isolation, multi-language support, and professional UI/UX design.</p>
+        </div>
+
+        <h2>🏗️ Enhanced Architecture Overview</h2>
         <div class="diagram-container">
             <div class="mermaid">
                 graph TB
-                    User["DevOps Team<br/>Usuario"] --> AzureDevOps["Azure DevOps<br/>Platform"]
+                    User["DevOps Team<br/>👤 End Users"] --> AzureDevOps["Azure DevOps Platform<br/>🌐 Enterprise DevOps"]
                     
-                    AzureDevOps --> WorkItems["Work Items<br/>Azure Boards"]
-                    AzureDevOps --> Extension["Browser Extension<br/>CRETS4DevOps"]
+                    AzureDevOps --> WorkItems["Work Items<br/>📋 PBI, Epic, Feature, Bug, Task"]
+                    AzureDevOps --> Extension["CRETS4DevOps V2<br/>📱 Browser Extension"]
                     
-                    Extension --> Frontend["React Frontend<br/>TypeScript"]
-                    Extension --> SDK["Azure DevOps SDK<br/>Integration Layer"]
+                    Extension --> HubView["Hub View<br/>🏠 Main Requirements Manager"]
+                    Extension --> WorkItemView["Work Item View<br/>📄 Independent Requirements Tab"]
                     
-                    Frontend --> Components["React Components<br/>RequirementItem, Forms"]
-                    Frontend --> Styling["CSS Styling<br/>UI/UX Layer"]
+                    HubView --> ReactApp["React Application<br/>⚛️ TypeScript + Hooks"]
+                    WorkItemView --> ReactApp
                     
-                    SDK --> DataLayer["Data Management<br/>Persistence Layer"]
+                    ReactApp --> Independence["Independence Engine<br/>🔒 Per-WorkItem Storage"]
+                    ReactApp --> EditingSystem["Editing System<br/>✏️ In-place Modifications"]
+                    ReactApp --> AutoRefresh["Auto-refresh System<br/>🔄 Real-time Updates"]
                     
-                    DataLayer --> LocalStorage["localStorage<br/>Browser Storage"]
-                    DataLayer --> JSONFiles["JSON Files<br/>Requirements Data"]
+                    Independence --> WorkItemStorage["WorkItemStorage Class<br/>💾 Isolated Data Management"]
+                    EditingSystem --> RequirementItem["RequirementItem Component<br/>🧩 Edit/Save/Restore"]
+                    AutoRefresh --> EventSystem["Event System<br/>📡 Cross-frame Communication"]
                     
-                    LocalStorage --> Requirements["Sustainability<br/>Requirements"]
-                    JSONFiles --> Requirements
+                    WorkItemStorage --> LocalStorage["localStorage<br/>🗄️ Browser Persistence"]
+                    WorkItemStorage --> JSONCatalog["JSON Catalog<br/>📚 Requirements Database"]
                     
-                    Requirements --> WorkItems
+                    EventSystem --> PostMessage["postMessage API<br/>📤 Cross-origin Communication"]
+                    EventSystem --> CustomEvents["CustomEvent API<br/>⚡ DOM Events"]
+                    EventSystem --> LocalStorageEvents["Storage Events<br/>📡 Storage Listeners"]
                     
                     style User fill:#e1f5fe
                     style AzureDevOps fill:#f3e5f5
                     style Extension fill:#e8f5e8
-                    style Frontend fill:#fff3e0
-                    style DataLayer fill:#fce4ec
+                    style Independence fill:#fff3e0
+                    style EditingSystem fill:#fce4ec
+                    style AutoRefresh fill:#f1f8e9
             </div>
         </div>
 
-        <h2>Flujo de Datos y Procesos</h2>
+        <h2>🔄 Advanced Data Flow and Independence Model</h2>
         <div class="diagram-container">
             <div class="mermaid">
                 sequenceDiagram
-                    participant U as Usuario
-                    participant AD as Azure DevOps
-                    participant C as CRETS4DevOps
+                    participant U as User
+                    participant Hub as Hub View
+                    participant WI1 as Work Item A
+                    participant WI2 as Work Item B
+                    participant WIS as WorkItemStorage
                     participant LS as localStorage
-                    participant WI as Work Item
                     
-                    U->>AD: Abre Work Item
-                    AD->>C: Carga Extension
-                    C->>LS: Lee requisitos guardados
-                    LS->>C: Retorna datos
-                    C->>U: Muestra interfaz
-                    U->>C: Selecciona requisitos
-                    C->>LS: Guarda selección
-                    C->>WI: Aplica requisitos
-                    WI->>AD: Actualiza Work Item
-                    AD->>U: Confirma cambios
+                    Note over U,LS: Phase 1: Requirements Selection
+                    U->>Hub: Select requirements
+                    Hub->>LS: Store pending requirements
+                    
+                    Note over U,LS: Phase 2: Independent Application
+                    U->>WI1: Open Work Item A
+                    WI1->>WIS: Initialize with ID_A
+                    WIS->>LS: Read from key "selectedRequirements_ID_A"
+                    LS->>WIS: Return Work Item A data
+                    WIS->>WI1: Display A's requirements
+                    
+                    Note over U,LS: Phase 3: Parallel Independence
+                    U->>WI2: Open Work Item B (different tab)
+                    WI2->>WIS: Initialize with ID_B
+                    WIS->>LS: Read from key "selectedRequirements_ID_B"
+                    LS->>WIS: Return Work Item B data
+                    WIS->>WI2: Display B's requirements
+                    
+                    Note over U,LS: Phase 4: Independent Editing
+                    U->>WI1: Edit requirement in A
+                    WI1->>WIS: Save changes to ID_A
+                    WIS->>LS: Update key "selectedRequirements_ID_A"
+                    Note over WI2: Work Item B remains unaffected
+                    
+                    Note over U,LS: Phase 5: Auto-refresh Synchronization
+                    WI1->>WI1: Dispatch custom event
+                    WI1->>WI2: Cross-frame notification
+                    WI2->>WIS: Refresh own data (ID_B)
+                    WIS->>WI2: Confirm independence maintained
             </div>
         </div>
 
-        <h2>Stack Tecnológico</h2>
+        <h2>🏢 Enhanced Technology Stack</h2>
         <div class="tech-stack">
             <div class="tech-card">
-                <h3>⚛️ Frontend</h3>
-                <p>React + TypeScript</p>
-                <small>Interfaz de usuario moderna y tipada</small>
+                <h3>⚛️ Frontend Layer</h3>
+                <p>React 17 + TypeScript</p>
+                <small>Modern UI with strong typing, hooks, and functional components</small>
             </div>
             <div class="tech-card">
-                <h3>🔧 Integration</h3>
-                <p>Azure DevOps SDK</p>
-                <small>Conexión nativa con la plataforma</small>
+                <h3>🔧 Integration Layer</h3>
+                <p>Azure DevOps SDK v3.1.0</p>
+                <small>IWorkItemFormService integration with universal Work Item support</small>
             </div>
             <div class="tech-card">
-                <h3>💾 Persistencia</h3>
-                <p>localStorage + JSON</p>
-                <small>Almacenamiento local y archivos</small>
+                <h3>💾 Data Layer</h3>
+                <p>WorkItemStorage + localStorage</p>
+                <small>Independent per-Work Item storage with real Azure DevOps IDs</small>
             </div>
             <div class="tech-card">
-                <h3>🎨 Styling</h3>
-                <p>CSS3 + Webpack</p>
-                <small>Diseño responsive y modular</small>
+                <h3>🎨 UI/UX Layer</h3>
+                <p>Professional CSS + Webpack</p>
+                <small>Clean English interface, no emojis, optimized bundle (247KB)</small>
+            </div>
+            <div class="tech-card">
+                <h3>📡 Communication Layer</h3>
+                <p>Multi-channel Events</p>
+                <small>postMessage + CustomEvent + Storage events for real-time sync</small>
+            </div>
+            <div class="tech-card">
+                <h3>🔒 Independence Engine</h3>
+                <p>Per-WorkItem Isolation</p>
+                <small>Complete independence with ID-based storage keys</small>
             </div>
         </div>
 
-        <h2>Características Principales</h2>
-        <div class="features">
+        <h2>🆕 Version 2.5.x New Features</h2>
+        <div class="features new-features">
             <ul>
-                <li>Gestión jerárquica de requisitos de sostenibilidad</li>
-                <li>Integración nativa con Azure DevOps Work Items</li>
-                <li>Interfaz React moderna y responsive</li>
-                <li>Persistencia automática en navegador</li>
-                <li>CRUD completo de requisitos</li>
-                <li>Búsqueda y filtrado avanzado</li>
-                <li>Validación de códigos jerárquicos</li>
-                <li>Aplicación directa a Work Items</li>
+                <li>Complete English translation of all user-facing text and dialogs</li>
+                <li>Clean professional UI without emojis in buttons</li>
+                <li>Blue-colored refresh button for better visual hierarchy</li>
+                <li>Removed technical Work Item information display</li>
+                <li>Eliminated non-functional "Test Independence" button</li>
+                <li>Professional confirmation dialogs without browser headers</li>
+                <li>Optimized bundle size to 247KB</li>
+                <li>Enhanced user experience for international usage</li>
             </ul>
         </div>
 
-        <h2>Arquitectura de Componentes</h2>
+        <h2>🏗️ Core Features (All Versions)</h2>
+        <div class="features">
+            <ul>
+                <li>Complete Work Item independence - each Work Item has isolated requirements</li>
+                <li>In-place editing with save/cancel/restore functionality</li>
+                <li>Auto-refresh system for real-time synchronization between views</li>
+                <li>Universal Work Item type support (PBI, Epic, Feature, Bug, Task, etc.)</li>
+                <li>Hierarchical requirements management with parent-child relationships</li>
+                <li>Real Azure DevOps Work Item ID integration (not fake IDs)</li>
+                <li>Multi-channel communication system for cross-frame updates</li>
+                <li>Professional English interface for international use</li>
+                <li>Comprehensive CRUD operations on sustainability requirements</li>
+                <li>Advanced search and filtering capabilities</li>
+                <li>Validation of hierarchical requirement codes</li>
+                <li>Direct application to Azure DevOps Work Items</li>
+            </ul>
+        </div>
+
+        <h2>📋 Version Timeline</h2>
+        <div class="version-timeline">
+            <div class="version-item">
+                <div class="version-number">v2.5.2 - UI Cleanup Release</div>
+                <p><strong>December 2024:</strong> Removed technical Work Item information display for cleaner user experience. Bundle optimized to 247KB.</p>
+            </div>
+            <div class="version-item">
+                <div class="version-number">v2.5.1 - Complete Dialog Translation</div>
+                <p><strong>December 2024:</strong> Translated Work Item-specific confirmation dialogs and success messages to English.</p>
+            </div>
+            <div class="version-item">
+                <div class="version-number">v2.5.0 - Hub Dialog Translation</div>
+                <p><strong>December 2024:</strong> Translated main hub confirmation dialogs to English for professional appearance.</p>
+            </div>
+            <div class="version-item">
+                <div class="version-number">v2.4.0 - International UI Release</div>
+                <p><strong>December 2024:</strong> Complete English translation of interface, removed emojis from buttons, blue refresh button, eliminated Test Independence button.</p>
+            </div>
+            <div class="version-item">
+                <div class="version-number">v2.3.0 - Independent Editing Release</div>
+                <p><strong>November 2024:</strong> Implemented complete in-place editing functionality with save/cancel/restore operations while maintaining total Work Item independence.</p>
+            </div>
+            <div class="version-item">
+                <div class="version-number">v2.2.0 - Auto-refresh Release</div>
+                <p><strong>November 2024:</strong> Implemented automatic refresh system using multi-channel communication for real-time synchronization between hub and Work Item views.</p>
+            </div>
+            <div class="version-item">
+                <div class="version-number">v2.1.x - Independence Implementation</div>
+                <p><strong>October 2024:</strong> Achieved complete Work Item independence using real Azure DevOps IDs and isolated storage keys. Fixed critical sharing issues.</p>
+            </div>
+            <div class="version-item">
+                <div class="version-number">v2.0.0 - Foundation Release</div>
+                <p><strong>September 2024:</strong> Initial release with basic sustainability requirements management and Azure DevOps integration.</p>
+            </div>
+        </div>
+
+        <h2>🧩 Advanced Component Architecture</h2>
+        <div class="diagram-container">
+            <div class="mermaid">
+                graph TB
+                    Main["SustainabilityRequirements<br/>🏠 Main Hub Component"] --> WorkItemReq["WorkItemRequirements<br/>📄 Work Item Tab Component"]
+                    
+                    Main --> ReqItem1["RequirementItem<br/>🧩 Recursive Component"]
+                    WorkItemReq --> ReqItem2["RequirementItem<br/>🧩 With Editing Capability"]
+                    
+                    ReqItem2 --> EditForm["Inline Edit Form<br/>✏️ Detail/Justification/Discussion"]
+                    ReqItem2 --> ActionButtons["Action Buttons<br/>🔘 Edit/Save/Cancel/Restore/Remove"]
+                    
+                    Main --> CreateForm["RequirementCreateForm<br/>➕ New Requirement Creation"]
+                    Main --> EditModal["RequirementEditForm<br/>📝 Modal Editing"]
+                    
+                    WorkItemReq --> WorkItemStorage["WorkItemStorage Class<br/>💾 Independence Engine"]
+                    WorkItemStorage --> StorageKeys["Storage Key Generation<br/>🔑 selectedRequirements_{workItemId}"]
+                    
+                    WorkItemReq --> AutoRefreshSystem["Auto-refresh System<br/>🔄 Real-time Updates"]
+                    AutoRefreshSystem --> EventListeners["Event Listeners<br/>📡 Cross-frame Communication"]
+                    
+                    Main --> GlobalState["Global State Management<br/>🌐 React Hooks"]
+                    WorkItemReq --> LocalState["Local State Management<br/>📍 Work Item Specific"]
+                    
+                    GlobalState --> Requirements["requirements[]<br/>📚 Hub Requirements"]
+                    LocalState --> WorkItemReqs["requirements[]<br/>📋 Work Item Requirements"]
+                    LocalState --> EditingState["editing states<br/>✏️ Per-requirement editing"]
+                    
+                    style Main fill:#4caf50
+                    style WorkItemReq fill:#2196f3
+                    style WorkItemStorage fill:#ff9800
+                    style AutoRefreshSystem fill:#9c27b0
+                    style EditForm fill:#e91e63
+                    style ActionButtons fill:#607d8b
+            </div>
+        </div>
+
+        <h2>🔒 Independence Architecture Deep Dive</h2>
         <div class="diagram-container">
             <div class="mermaid">
                 graph LR
-                    Main["SustainabilityRequirements<br/>Componente Principal"] --> Item["RequirementItem<br/>Componente Recursivo"]
-                    Main --> Edit["RequirementEditForm<br/>Formulario de Edición"]
-                    Main --> Create["RequirementCreateForm<br/>Formulario de Creación"]
+                    WI1["Work Item: 12345<br/>📋 Product Backlog Item"] --> Storage1["localStorage Key:<br/>selectedRequirements_12345"]
+                    WI2["Work Item: 67890<br/>🐛 Bug"] --> Storage2["localStorage Key:<br/>selectedRequirements_67890"]
+                    WI3["Work Item: 54321<br/>⭐ Epic"] --> Storage3["localStorage Key:<br/>selectedRequirements_54321"]
                     
-                    Item --> Item2["RequirementItem<br/>Hijos Anidados"]
-                    Item2 --> Item3["RequirementItem<br/>Sub-hijos"]
+                    Storage1 --> Data1["Requirement Set A<br/>🔒 Completely Isolated"]
+                    Storage2 --> Data2["Requirement Set B<br/>🔒 Completely Isolated"]
+                    Storage3 --> Data3["Requirement Set C<br/>🔒 Completely Isolated"]
                     
-                    Main --> State["Estado Global<br/>React Hooks"]
-                    State --> Reqs["requirements[]"]
-                    State --> Selected["selectedRequirement"]
-                    State --> Checked["checkedRequirements[]"]
+                    Data1 --> Edit1["Edit State A<br/>✏️ Independent Modifications"]
+                    Data2 --> Edit2["Edit State B<br/>✏️ Independent Modifications"]
+                    Data3 --> Edit3["Edit State C<br/>✏️ Independent Modifications"]
                     
-                    style Main fill:#4caf50
-                    style State fill:#2196f3
-                    style Item fill:#ff9800
-                    style Edit fill:#9c27b0
-                    style Create fill:#e91e63
+                    style WI1 fill:#e3f2fd
+                    style WI2 fill:#fff3e0
+                    style WI3 fill:#f1f8e9
+                    style Storage1 fill:#e8f5e8
+                    style Storage2 fill:#fff8e1
+                    style Storage3 fill:#e0f2f1
+                    style Data1 fill:#e1f5fe
+                    style Data2 fill:#fef7e0
+                    style Data3 fill:#e8f5e8
             </div>
         </div>
     </div>

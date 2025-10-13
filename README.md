@@ -1,23 +1,82 @@
-# CRETS4DevOps V2 - Extensión Avanzada para Azure DevOps
+# CRETS4DevOps V2 - ExtensiÃ³n Avanzada para Azure DevOps
 
-Esta es la **versión 2.0** de CRETS4DevOps, una extensión mejorada para Azure DevOps que proporciona gestión avanzada de requisitos de sostenibilidad en Work Items.
+Esta es la **versiÃ³n 2.5.2** de CRETS4DevOps, un## Diferencias con V1 Completamente Implementada## Licencia
+
+MIT
+
+## VersiÃ³n Actual
+
+**CRETS4DevOps V2** - VersiÃ³n **2.5.2** (UI Cleanup Release)
+
+### Historial de Versiones:
+- **v2.5.2**: Limpieza de UI profesional, bundle optimizado a 247KB
+- **v2.5.1**: TraducciÃ³n completa de diÃ¡logos a inglÃ©s
+- **v2.5.0**: TraducciÃ³n del hub principal
+- **v2.4.0**: Interfaz profesional completamente en inglÃ©s
+- **v2.3.0**: Sistema de ediciÃ³n en lÃ­nea completo
+- **v2.2.0**: Sistema de auto-actualizaciÃ³n multi-canal
+- **v2.1.x**: ImplementaciÃ³n de independencia total entre Work Items
+
+### DocumentaciÃ³n para Tesis:
+La carpeta `docs/` contiene documentaciÃ³n tÃ©cnica completa adecuada para investigaciÃ³n acadÃ©mica y escritura de tesis, incluyendo diagramas interactivos de arquitectura y anÃ¡lisis tÃ©cnico profundo.pecto | V1 | V2.5.2 (Actual) |
+|---------|----|----|
+| **Nombre** | Plugin CRETS | CRETS4DevOps V2 |
+| **VersiÃ³n** | 1.12.8 | **2.5.2** |
+| **Independencia** | âŒ Sin aislamiento | âœ… Aislamiento total por Work Item |
+| **EdiciÃ³n** | âŒ Solo selecciÃ³n | âœ… EdiciÃ³n completa en lÃ­nea |
+| **Auto-refresh** | âŒ Manual | âœ… SincronizaciÃ³n automÃ¡tica |
+| **Idioma** | ğŸ‡ªğŸ‡¸ EspaÃ±ol | ğŸ‡ºğŸ‡¸ InglÃ©s profesional |
+| **Arquitectura** | BÃ¡sica | âœ… Empresarial con patrones avanzados |
+| **Bundle** | ~300KB+ | âœ… 247KB optimizado |
+| **UI/UX** | TÃ©cnica | âœ… Profesional limpia |
+
+## ğŸ—ï¸ Arquitectura TÃ©cnica Avanzada
+
+### Componentes Principales:
+- **WorkItemStorage**: Motor de independencia con claves basadas en IDs reales
+- **RequirementItem**: Componente recursivo con ediciÃ³n en lÃ­nea
+- **Multi-channel Communication**: Sistema de eventos para auto-refresh
+- **Professional English Interface**: EstÃ¡ndares internacionalesÃ³n sofisticada para Azure DevOps que proporciona gestiÃ³n avanzada de requisitos de sostenibilidad con independencia completa entre Work Items, ediciÃ³n en lÃ­nea, y auto-actualizaciÃ³n en tiempo real.
+
+## ğŸš€ Funcionalidades Avanzadas V2.5.x
+
+- âœ… **Independencia Total**: Cada Work Item mantiene sus propios requisitos de forma aislada
+- âœ… **EdiciÃ³n En LÃ­nea**: ModificaciÃ³n directa de requisitos con funcionalidad guardar/restaurar
+- âœ… **Auto-actualizaciÃ³n**: SincronizaciÃ³n en tiempo real entre diferentes vistas
+- âœ… **Interfaz Profesional**: Completamente en inglÃ©s con estÃ¡ndares internacionales
+- âœ… **Sistema Multi-canal**: ComunicaciÃ³n avanzada entre componentes
+- âœ… **UI Limpia**: Sin informaciÃ³n tÃ©cnica, enfoque en funcionalidad core
+- âœ… **Bundle Optimizado**: TamaÃ±o reducido a 247KB
+
+## ğŸ†• EvoluciÃ³n desde V1
+
+| Aspecto | V1 | V2.5.2 |
+|---------|----|----|
+| **Independencia** | âŒ Compartida | âœ… Aislamiento total |
+| **EdiciÃ³n** | âŒ Solo lectura | âœ… En lÃ­nea con respaldo |
+| **Idioma** | ğŸ‡ªğŸ‡¸ EspaÃ±ol | ğŸ‡ºğŸ‡¸ InglÃ©s profesional |
+| **Auto-refresh** | âŒ Manual | âœ… Tiempo real |
+| **Bundle** | ~300KB+ | 247KB optimizado |
+| **Arquitectura** | BÃ¡sica | Empresarial avanzada |Ops V2 - Extensiï¿½n Avanzada para Azure DevOps
+
+Esta es la **versiï¿½n 2.0** de CRETS4DevOps, una extensiï¿½n mejorada para Azure DevOps que proporciona gestiï¿½n avanzada de requisitos de sostenibilidad en Work Items.
 
 ##  Novedades en V2
 
 -  Interfaz de usuario mejorada
--  Funcionalidades extendidas de gestión de requisitos  
--  Mejor organización jerárquica de datos
+-  Funcionalidades extendidas de gestiï¿½n de requisitos  
+-  Mejor organizaciï¿½n jerï¿½rquica de datos
 -  Performance optimizada
--  Documentación técnica completa
+-  Documentaciï¿½n tï¿½cnica completa
 
 ## Requisitos previos
 
-- [Node.js](https://nodejs.org/) (versión 14 o posterior)
+- [Node.js](https://nodejs.org/) (versiï¿½n 14 o posterior)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [tfx-cli](https://www.npmjs.com/package/tfx-cli) (instalado globalmente con `npm install -g tfx-cli`)
-- Una organización de Azure DevOps para probar la extensión
+- Una organizaciï¿½n de Azure DevOps para probar la extensiï¿½n
 
-## Configuración del proyecto
+## Configuraciï¿½n del proyecto
 
 1. Clona este repositorio
 2. Ejecuta `npm install` para instalar las dependencias
@@ -30,9 +89,9 @@ Para iniciar el servidor de desarrollo:
 npm run dev
 ```
 
-## Construcción
+## Construcciï¿½n
 
-Para construir la extensión:
+Para construir la extensiï¿½n:
 
 ```bash
 npm run build
@@ -40,19 +99,19 @@ npm run build
 
 ## Empaquetado
 
-Para crear el archivo `.vsix` de la extensión:
+Para crear el archivo `.vsix` de la extensiï¿½n:
 
 ```bash
 npm run package
 ```
 
-El archivo de la extensión se generará en la carpeta `dist`.
+El archivo de la extensiï¿½n se generarï¿½ en la carpeta `dist`.
 
-## Publicación
+## Publicaciï¿½n
 
-Antes de publicar la extensión, asegúrate de modificar el campo `publisher` en el archivo `vss-extension.json` con tu ID de publicador de Marketplace.
+Antes de publicar la extensiï¿½n, asegï¿½rate de modificar el campo `publisher` en el archivo `vss-extension.json` con tu ID de publicador de Marketplace.
 
-Para publicar la extensión:
+Para publicar la extensiï¿½n:
 
 ```bash
 npm run publish
@@ -60,59 +119,59 @@ npm run publish
 
 ## Estructura del proyecto
 
-- `src/`: Código fuente
+- `src/`: Cï¿½digo fuente
   - `sustainability-requirements.html`: Plantilla HTML principal
-  - `sustainability-requirements.tsx`: Componente React para gestión de requisitos
+  - `sustainability-requirements.tsx`: Componente React para gestiï¿½n de requisitos
   - `sustainability_requirements.json`: Base de datos de requisitos
-- `docs/`: Documentación técnica completa
-- `img/`: Imágenes y recursos
+- `docs/`: Documentaciï¿½n tï¿½cnica completa
+- `img/`: Imï¿½genes y recursos
 - `dist/`: Archivos generados (no incluidos en el repositorio)
-- `vss-extension.json`: Manifiesto de la extensión
-- `webpack.config.js`: Configuración de Webpack
+- `vss-extension.json`: Manifiesto de la extensiï¿½n
+- `webpack.config.js`: Configuraciï¿½n de Webpack
 - `package.json`: Dependencias y scripts
-- `tsconfig.json`: Configuración de TypeScript
+- `tsconfig.json`: Configuraciï¿½n de TypeScript
 
-## Características principales
+## Caracterï¿½sticas principales
 
--  **Gestión de requisitos de sostenibilidad**: Interfaz completa para crear, editar y organizar requisitos
--  **Persistencia local**: Los datos se guardan automáticamente en localStorage
--  **Estructura jerárquica**: Organización en árbol de requisitos padre-hijo
--  **Búsqueda avanzada**: Filtrado y búsqueda de requisitos en tiempo real
--  **Selección múltiple**: Aplicación de múltiples requisitos a Work Items
--  **Visualización clara**: Interfaz intuitiva y responsive
+-  **Gestiï¿½n de requisitos de sostenibilidad**: Interfaz completa para crear, editar y organizar requisitos
+-  **Persistencia local**: Los datos se guardan automï¿½ticamente en localStorage
+-  **Estructura jerï¿½rquica**: Organizaciï¿½n en ï¿½rbol de requisitos padre-hijo
+-  **Bï¿½squeda avanzada**: Filtrado y bï¿½squeda de requisitos en tiempo real
+-  **Selecciï¿½n mï¿½ltiple**: Aplicaciï¿½n de mï¿½ltiples requisitos a Work Items
+-  **Visualizaciï¿½n clara**: Interfaz intuitiva y responsive
 
 ## Diferencias con V1
 
 | Aspecto | V1 | V2 |
 |---------|----|----|
 | **Nombre** | Plugin CRETS | CRETS4DevOps V2 |
-| **Versión** | 1.12.8 | 2.0.0 |
-| **Funcionalidad** | Básica | Avanzada |
-| **Documentación** | Mínima | Completa |
+| **Versiï¿½n** | 1.12.8 | 2.0.0 |
+| **Funcionalidad** | Bï¿½sica | Avanzada |
+| **Documentaciï¿½n** | Mï¿½nima | Completa |
 | **Arquitectura** | Simple | Profesional |
 
-## Documentación
+## Documentaciï¿½n
 
-La documentación técnica completa está disponible en la carpeta `docs/`:
+La documentaciï¿½n tï¿½cnica completa estï¿½ disponible en la carpeta `docs/`:
 
 - [Arquitectura del sistema](docs/architecture-diagram.md)
-- [Gestión de almacenamiento](docs/data-storage-management.md)
-- [Guía de localStorage](docs/localStorage-guide.md)
-- [Documentación técnica](docs/technical-architecture.md)
+- [Gestiï¿½n de almacenamiento](docs/data-storage-management.md)
+- [Guï¿½a de localStorage](docs/localStorage-guide.md)
+- [Documentaciï¿½n tï¿½cnica](docs/technical-architecture.md)
 
-## Personalización
+## Personalizaciï¿½n
 
-Para personalizar la extensión:
+Para personalizar la extensiï¿½n:
 
 1. Modifica `src/sustainability-requirements.tsx` para cambiar la funcionalidad
-2. Actualiza `vss-extension.json` con tus datos de publicación
-3. Reemplaza las imágenes en `img/` con tu propio logo
+2. Actualiza `vss-extension.json` con tus datos de publicaciï¿½n
+3. Reemplaza las imï¿½genes en `img/` con tu propio logo
 4. Modifica `sustainability_requirements.json` para agregar nuevos requisitos
 
 ## Licencia
 
 MIT
 
-## Versión
+## Versiï¿½n
 
-**CRETS4DevOps V2** - Versión 2.0.0
+**CRETS4DevOps V2** - Versiï¿½n 2.0.0
