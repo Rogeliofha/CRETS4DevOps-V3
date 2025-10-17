@@ -2,9 +2,9 @@
   "manifestVersion": 1,
   "id": "plugin-crets-v2",
   "publisher": "rogeliofha",
-  "version": "2.5.2",
-  "name": "CRETS4DevOps V2",
-  "description": "CRETS4DevOps V2 - Enhanced extension for advanced sustainability requirements management with independent work item support",
+  "version": "2.5.4",
+  "name": "CRETS4DevOps",
+  "description": "CRETS4DevOps - Enhanced extension for advanced sustainability requirements management with independent work item support",
   "public": false,
   "categories": ["Azure Boards"],
   "targets": [
@@ -42,7 +42,7 @@
         "ms.vss-web.project-hub-groups-collection"
       ],
       "properties": {
-        "name": "CRETS4DevOps V2",
+        "name": "CRETS4DevOps",
         "uri": "dist/sustainability-requirements.html",
         "icon": "img/sustainability.png",
         "order": 100
@@ -56,7 +56,7 @@
         "ms.vss-work-web.work-item-form"
       ],
       "properties": {
-        "name": "CRETS4DevOps V2",
+        "name": "CRETS4DevOps",
         "uri": "dist/sustainability-requirements.html"
       }
     },

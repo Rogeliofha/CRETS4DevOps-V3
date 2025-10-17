@@ -1400,7 +1400,7 @@ const WorkItemRequirements: React.FC = () => {
               <div className="instructions">
                 <h4>How to add requirements:</h4>
                 <ol>
-                  <li>Go to the "CRETS4DevOps V2" hub in your project</li>
+                  <li>Go to the "CRETS4DevOps" hub in your project</li>
                   <li>Select the sustainability requirements you need</li>
                   <li>Click "Apply Selected to Work Items"</li>
                   <li>Requirements will be applied independently to this Work Item</li>
