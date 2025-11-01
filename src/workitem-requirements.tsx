@@ -79,17 +79,79 @@ class WorkItemStorage {
   static setSelectedRequirements(requirements: Requirement[]) {
     try {
       const key = this.getStorageKey('selectedRequirements');
+      
+      // Crear backup antes de guardar
+      const existingData = localStorage.getItem(key);
+      if (existingData) {
+        const backupKey = `backup_${key}_${Date.now()}`;
+        localStorage.setItem(backupKey, existingData);
+        console.log(`💾 Backup creado: ${backupKey}`);
+      }
+      
       localStorage.setItem(key, JSON.stringify(requirements));
+      
+      // Verificar que se guardó correctamente
+      const verification = localStorage.getItem(key);
+      const verificationSuccess = !!verification;
       
       console.log(`💾 Guardando requisitos en storage independiente:`, {
         workItemId: this.workItemId,
         storageKey: key,
         count: requirements.length,
         independence: `Exclusivo para work item ${this.workItemId}`,
-        requirementIds: requirements.map(r => r.id).slice(0, 3) // Primeros 3 IDs para debug
+        requirementIds: requirements.map(r => r.id).slice(0, 3), // Primeros 3 IDs para debug
+        verificationSuccess: verificationSuccess,
+        timestamp: new Date().toISOString(),
+        domain: window.location.hostname,
+        userAgent: navigator.userAgent.substring(0, 50) + '...'
       });
-    } catch (e) {
+      
+      // Log adicional para debugging de persistencia
+      if (!verificationSuccess) {
+        console.error(`❌ FALLO EN PERSISTENCIA: Los datos no se guardaron correctamente`);
+        console.error(`🔍 localStorage disponible:`, typeof(Storage) !== "undefined");
+        console.error(`🔍 Quota exceeded:`, this.checkStorageQuota());
+      }
+      
+    } catch (e: any) {
       console.error('❌ Error al guardar requisitos:', e);
+      if (e.name === 'QuotaExceededError') {
+        console.error('💽 Error: localStorage quota exceeded - limpiando datos antiguos');
+        this.cleanupOldBackups();
+      }
+    }
+  }
+  
+  // Nueva función: verificar quota de localStorage
+  private static checkStorageQuota(): {used: number, available: boolean} {
+    try {
+      const testKey = 'test_' + Date.now();
+      const testData = 'x'.repeat(1024); // 1KB test
+      localStorage.setItem(testKey, testData);
+      localStorage.removeItem(testKey);
+      return {used: JSON.stringify(localStorage).length, available: true};
+    } catch (e) {
+      return {used: JSON.stringify(localStorage).length, available: false};
+    }
+  }
+  
+  // Nueva función: limpiar backups antiguos si es necesario
+  private static cleanupOldBackups() {
+    try {
+      const allKeys = Object.keys(localStorage);
+      const backupKeys = allKeys.filter(key => key.startsWith('backup_workitem_'));
+      
+      // Ordenar por timestamp y eliminar los más antiguos
+      backupKeys.sort();
+      const toDelete = backupKeys.slice(0, Math.floor(backupKeys.length / 2));
+      
+      toDelete.forEach(key => {
+        localStorage.removeItem(key);
+        console.log(`🗑️ Backup antiguo eliminado: ${key}`);
+      });
+      
+    } catch (e) {
+      console.error('❌ Error limpiando backups:', e);
     }
   }
 
@@ -137,56 +199,123 @@ class WorkItemStorage {
       independence: thisWorkItemKeys.length > 0 ? '✅ Independiente' : '❌ Sin datos propios'
     });
   }
+  
+  // Nueva función: Diagnóstico completo de persistencia
+  static diagnosePersistenceIssues(): void {
+    console.log('🏥 DIAGNÓSTICO DE PERSISTENCIA - INICIO');
+    
+    // Verificar contexto de Azure DevOps
+    console.log('🌐 Contexto de navegador:', {
+      hostname: window.location.hostname,
+      protocol: window.location.protocol,
+      origin: window.location.origin,
+      userAgent: navigator.userAgent.substring(0, 100) + '...',
+      cookiesEnabled: navigator.cookieEnabled,
+      localStorageAvailable: typeof(Storage) !== "undefined"
+    });
+    
+    // Verificar cuota de localStorage
+    const quota = this.checkStorageQuota();
+    console.log('💽 Estado de localStorage:', quota);
+    
+    // Verificar Work Item actual
+    console.log('📋 Work Item actual:', {
+      workItemId: this.workItemId,
+      storageKeyWouldBe: this.workItemId ? this.getStorageKey('selectedRequirements') : 'N/A'
+    });
+    
+    // Verificar datos existentes
+    if (this.workItemId) {
+      const key = this.getStorageKey('selectedRequirements');
+      const data = localStorage.getItem(key);
+      console.log('📦 Datos existentes:', {
+        storageKey: key,
+        dataExists: !!data,
+        dataSize: data ? data.length : 0,
+        dataValid: data ? this.isValidJSON(data) : false
+      });
+      
+      // Debug completo del storage
+      this.debugIndependence();
+    }
+    
+    console.log('🏥 DIAGNÓSTICO DE PERSISTENCIA - FIN');
+  }
+  
+  private static isValidJSON(str: string): boolean {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
-  // Nueva función: Limpieza de storage corrupto y datos legacy
+  // Nueva función: Limpieza de storage corrupto y datos legacy (VERSION MEJORADA - NO AGRESIVA)
   static cleanupCorruptedStorage() {
-    console.log('🧹 Iniciando limpieza de storage corrupto...');
+    console.log('🧹 Iniciando limpieza CONSERVADORA de storage...');
     
     try {
       const allKeys = Object.keys(localStorage);
       let cleaned = 0;
       
-      // Limpiar claves legacy problemáticas
-      const legacyKeys = allKeys.filter(key => 
-        key.startsWith('default_') ||           // Claves default que causan sharing
-        key.startsWith('workitem_dev_12345_') || // ID fijo problemático
-        key.startsWith('workitem_null_') ||      // IDs null
-        key.startsWith('workitem_undefined_')    // IDs undefined
+      // SOLO limpiar claves claramente problemáticas - SIN tocar datos válidos
+      const definitelyProblematicKeys = allKeys.filter(key => 
+        key.startsWith('workitem_null_') ||      // IDs null definitivamente inválidos
+        key.startsWith('workitem_undefined_') || // IDs undefined definitivamente inválidos
+        key.startsWith('workitem_temp_') ||      // IDs temporales muy antiguos (>24h)
+        (key.startsWith('pending_requirements_') && this.isOldPendingKey(key)) // Solo pending muy antiguos
       );
       
-      legacyKeys.forEach(key => {
-        localStorage.removeItem(key);
-        cleaned++;
-        console.log(`🗑️ Limpiado storage legacy: ${key}`);
-      });
-      
-      // Verificar claves duplicadas o corruptas
-      const workItemKeys = allKeys.filter(key => key.startsWith('workitem_'));
-      const duplicateGroups = new Map();
-      
-      workItemKeys.forEach(key => {
-        const parts = key.split('_');
-        if (parts.length >= 3) {
-          const workItemId = parts[1];
-          const dataType = parts.slice(2).join('_');
-          const groupKey = dataType;
-          
-          if (!duplicateGroups.has(groupKey)) {
-            duplicateGroups.set(groupKey, []);
+      // Crear backup antes de eliminar CUALQUIER cosa
+      const backupData: {[key: string]: string} = {};
+      definitelyProblematicKeys.forEach(key => {
+        try {
+          const data = localStorage.getItem(key);
+          if (data) {
+            backupData[key] = data;
           }
-          duplicateGroups.get(groupKey).push({ key, workItemId });
+        } catch (e) {
+          console.warn(`⚠️ No se pudo hacer backup de ${key}:`, e);
         }
       });
       
-      console.log(`🧹 Limpieza completada:`, {
-        legacyKeysRemoved: cleaned,
-        remainingWorkItemKeys: workItemKeys.length - cleaned,
-        uniqueWorkItems: new Set(workItemKeys.map(k => k.split('_')[1])).size
+      // Guardar backup si hay datos a limpiar
+      if (Object.keys(backupData).length > 0) {
+        localStorage.setItem('storage_backup_' + Date.now(), JSON.stringify(backupData));
+        console.log('💾 Backup creado antes de limpieza:', Object.keys(backupData));
+      }
+      
+      // Eliminar solo las claves claramente problemáticas
+      definitelyProblematicKeys.forEach(key => {
+        localStorage.removeItem(key);
+        cleaned++;
+        console.log(`🗑️ Limpiado storage problemático: ${key}`);
+      });
+      
+      console.log(`🧹 Limpieza CONSERVADORA completada:`, {
+        problematicKeysRemoved: cleaned,
+        backupCreated: Object.keys(backupData).length > 0,
+        validWorkItemKeysPreserved: allKeys.filter(k => k.startsWith('workitem_') && 
+          !definitelyProblematicKeys.includes(k)).length
       });
       
     } catch (e) {
-      console.error('❌ Error en limpieza de storage:', e);
+      console.error('❌ Error en limpieza conservadora de storage:', e);
     }
+  }
+  
+  // Helper para detectar claves pending muy antiguas (>24 horas)
+  private static isOldPendingKey(key: string): boolean {
+    const match = key.match(/pending_requirements_(\d+)/);
+    if (match) {
+      const timestamp = parseInt(match[1]);
+      const now = Date.now();
+      const age = now - timestamp;
+      const twentyFourHours = 24 * 60 * 60 * 1000;
+      return age > twentyFourHours;
+    }
+    return false;
   }
 
   // Nueva función: Verificación estricta de independencia
@@ -860,24 +989,30 @@ const WorkItemRequirements: React.FC = () => {
           setIsNewWorkItem(currentIsNew);
           WorkItemStorage.setWorkItemId(currentWorkItemId);
           
-          // Verificar independencia estricta
+          // Verificar independencia estricta SIN eliminar datos
           const isIndependent = WorkItemStorage.verifyStrictIndependence();
           
           if (!isIndependent) {
-            console.error(`❌ Independencia comprometida para work item ${currentWorkItemId}`);
-            // Force clean para este work item específico
-            const problemKey = WorkItemStorage.getStorageKey('selectedRequirements');
-            localStorage.removeItem(problemKey);
-            console.log(`🧹 Storage limpiado forzosamente para ${currentWorkItemId}`);
+            console.warn(`⚠️ Posible problema de independencia detectado para work item ${currentWorkItemId}`);
+            // NO eliminar datos automáticamente - solo loggear para debug
+            console.log(`📊 Storage key para este work item: ${WorkItemStorage.getStorageKey('selectedRequirements')}`);
+            console.log(`🔍 Se recomienda verificar manualmente si hay conflictos`);
+          } else {
+            console.log(`✅ Independencia verificada para work item ${currentWorkItemId}`);
           }
           
           // Cargar requisitos específicos de este work item (después de verificación)
           const savedReqs = WorkItemStorage.getSelectedRequirements();
+          
+          // NUEVO: Diagnóstico completo de persistencia
+          WorkItemStorage.diagnosePersistenceIssues();
+          
           console.log(`📦 Requisitos específicos cargados para work item ${currentWorkItemId}:`, {
             count: savedReqs.length,
-            independence: isIndependent ? '✅ Completamente independiente' : '⚠️ Limpiado y ahora independiente',
+            independence: isIndependent ? '✅ Completamente independiente' : '⚠️ Verificar manualmente',
             workItemId: currentWorkItemId,
-            storageKey: WorkItemStorage.getStorageKey('selectedRequirements')
+            storageKey: WorkItemStorage.getStorageKey('selectedRequirements'),
+            sampleRequirements: savedReqs.slice(0, 3).map(r => ({ id: r.id, detail: r.attrs.detail.substring(0, 50) + '...' }))
           });
           
           setRequirements(savedReqs);
