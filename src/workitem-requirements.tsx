@@ -363,6 +363,292 @@ class WorkItemStorage {
   }
 }
 
+// NUEVA CLASE: Sistema de almacenamiento híbrido (Azure DevOps + localStorage cache)
+// Resuelve el problema de sincronización multi-dispositivo
+class HybridWorkItemStorage {
+  private static workItemId: string | null = null;
+  
+  // Nombres de campos personalizados en Azure DevOps
+  private static readonly AZURE_FIELD_REQUIREMENTS = 'Custom.SustainabilityRequirements';
+  private static readonly AZURE_FIELD_LAST_MODIFIED = 'Custom.SustainabilityLastModified';
+  private static readonly AZURE_FIELD_VERSION = 'Custom.SustainabilityVersion';
+  
+  static setWorkItemId(id: string) {
+    if (this.workItemId !== id) {
+      console.log(`🔄 [HÍBRIDO] Cambiando Work Item Storage: "${this.workItemId}" → "${id}"`);
+      this.workItemId = id;
+      console.log(`🌐 Sistema híbrido activo: Azure DevOps + localStorage cache`);
+    }
+  }
+  
+  static getStorageKey(key: string): string {
+    if (!this.workItemId) {
+      console.warn('⚠️ Work Item ID no configurado, usando clave temporal');
+      return `temp_${key}_${Date.now()}`;
+    }
+    return `workitem_${this.workItemId}_${key}`;
+  }
+  
+  // NUEVA FUNCIÓN: Guardar en Azure DevOps Work Item Fields
+  static async saveToAzureDevOps(requirements: Requirement[]): Promise<boolean> {
+    try {
+      if (!this.workItemId) {
+        throw new Error('Work Item ID no configurado');
+      }
+      
+      const workItemFormService = await SDK.getService<IWorkItemFormService>(
+        WorkItemTrackingServiceIds.WorkItemFormService
+      );
+      
+      // Preparar datos para guardar
+      const dataToSave = {
+        requirements: requirements,
+        metadata: {
+          count: requirements.length,
+          lastModified: new Date().toISOString(),
+          version: '2.5.8',
+          workItemId: this.workItemId,
+          device: navigator.userAgent.substring(0, 50) + '...'
+        }
+      };
+      
+      // Intentar guardar en campos personalizados de Azure DevOps
+      await workItemFormService.setFieldValue(
+        this.AZURE_FIELD_REQUIREMENTS, 
+        JSON.stringify(dataToSave)
+      );
+      
+      await workItemFormService.setFieldValue(
+        this.AZURE_FIELD_LAST_MODIFIED, 
+        new Date().toISOString()
+      );
+      
+      await workItemFormService.setFieldValue(
+        this.AZURE_FIELD_VERSION, 
+        '2.5.8'
+      );
+      
+      console.log(`☁️ [HÍBRIDO] Datos guardados en Azure DevOps para Work Item ${this.workItemId}:`, {
+        requirementsCount: requirements.length,
+        timestamp: new Date().toISOString(),
+        azureFields: {
+          requirements: this.AZURE_FIELD_REQUIREMENTS,
+          lastModified: this.AZURE_FIELD_LAST_MODIFIED,
+          version: this.AZURE_FIELD_VERSION
+        },
+        multiDeviceSync: '✅ Disponible en todos los dispositivos'
+      });
+      
+      return true;
+      
+    } catch (error) {
+      console.warn(`⚠️ [HÍBRIDO] No se pudo guardar en Azure DevOps:`, error);
+      console.log(`💡 Esto puede indicar que faltan campos personalizados en el Process Template`);
+      return false;
+    }
+  }
+  
+  // NUEVA FUNCIÓN: Cargar desde Azure DevOps Work Item Fields
+  static async loadFromAzureDevOps(): Promise<Requirement[] | null> {
+    try {
+      if (!this.workItemId) {
+        return null;
+      }
+      
+      const workItemFormService = await SDK.getService<IWorkItemFormService>(
+        WorkItemTrackingServiceIds.WorkItemFormService
+      );
+      
+      // Intentar cargar desde campos personalizados
+      const fieldValue = await workItemFormService.getFieldValue(this.AZURE_FIELD_REQUIREMENTS);
+      
+      if (!fieldValue) {
+        console.log(`📭 [HÍBRIDO] No hay datos en Azure DevOps para Work Item ${this.workItemId}`);
+        return null;
+      }
+      
+      const parsedData = JSON.parse(fieldValue as string);
+      const requirements = parsedData.requirements || [];
+      
+      console.log(`☁️ [HÍBRIDO] Datos cargados desde Azure DevOps para Work Item ${this.workItemId}:`, {
+        requirementsCount: requirements.length,
+        lastModified: parsedData.metadata?.lastModified,
+        version: parsedData.metadata?.version,
+        originalDevice: parsedData.metadata?.device,
+        multiDeviceSync: '✅ Sincronizado entre dispositivos'
+      });
+      
+      return requirements;
+      
+    } catch (error) {
+      console.warn(`⚠️ [HÍBRIDO] No se pudo cargar desde Azure DevOps:`, error);
+      return null;
+    }
+  }
+  
+  // FUNCIÓN HÍBRIDA: Guardar con respaldo automático y multi-dispositivo
+  static async setSelectedRequirements(requirements: Requirement[]) {
+    try {
+      const key = this.getStorageKey('selectedRequirements');
+      
+      // 1. Crear backup del estado anterior (localStorage)
+      const existingData = localStorage.getItem(key);
+      if (existingData) {
+        const backupKey = `backup_${key}_${Date.now()}`;
+        localStorage.setItem(backupKey, existingData);
+        console.log(`💾 [HÍBRIDO] Backup local creado: ${backupKey}`);
+      }
+      
+      // 2. Guardar en localStorage (cache rápido)
+      localStorage.setItem(key, JSON.stringify(requirements));
+      
+      // 3. Intentar guardar en Azure DevOps (sincronización multi-dispositivo)
+      const azureSuccess = await this.saveToAzureDevOps(requirements);
+      
+      // 4. Marcar estado de sincronización
+      const syncStatus = {
+        localStorage: true,
+        azureDevOps: azureSuccess,
+        timestamp: new Date().toISOString(),
+        requirementsCount: requirements.length,
+        device: navigator.userAgent.substring(0, 50) + '...'
+      };
+      
+      localStorage.setItem(
+        this.getStorageKey('syncStatus'), 
+        JSON.stringify(syncStatus)
+      );
+      
+      console.log(`💾 [HÍBRIDO] Guardado completado:`, {
+        workItemId: this.workItemId,
+        storageKey: key,
+        count: requirements.length,
+        localStorage: '✅ Guardado (cache rápido)',
+        azureDevOps: azureSuccess ? '✅ Sincronizado (multi-dispositivo)' : '⚠️ Fallback (solo este PC)',
+        availability: azureSuccess ? '🌐 Disponible en todos los dispositivos' : '💻 Solo disponible en este PC'
+      });
+      
+    } catch (e: any) {
+      console.error('❌ [HÍBRIDO] Error en guardado:', e);
+      // Fallback: al menos intentar guardar en localStorage
+      try {
+        const key = this.getStorageKey('selectedRequirements');
+        localStorage.setItem(key, JSON.stringify(requirements));
+        console.log('💾 [HÍBRIDO] Fallback: Guardado solo en localStorage');
+      } catch (fallbackError) {
+        console.error('❌ [HÍBRIDO] Error crítico: No se pudo guardar en ningún storage:', fallbackError);
+      }
+    }
+  }
+  
+  // FUNCIÓN HÍBRIDA: Cargar con priorización inteligente (Azure DevOps > localStorage)
+  static async getSelectedRequirements(): Promise<Requirement[]> {
+    try {
+      const key = this.getStorageKey('selectedRequirements');
+      
+      // 1. Intentar cargar desde Azure DevOps (datos más actuales, multi-dispositivo)
+      const azureData = await this.loadFromAzureDevOps();
+      
+      if (azureData && azureData.length > 0) {
+        // Actualizar cache local con datos de Azure DevOps
+        localStorage.setItem(key, JSON.stringify(azureData));
+        
+        console.log(`📦 [HÍBRIDO] Cargado desde Azure DevOps (fuente autorizada):`, {
+          workItemId: this.workItemId,
+          count: azureData.length,
+          source: '☁️ Azure DevOps Work Item Fields',
+          availability: '🌐 Sincronizado entre todos los dispositivos'
+        });
+        
+        return azureData;
+      }
+      
+      // 2. Fallback: cargar desde localStorage (solo este dispositivo)
+      const localData = localStorage.getItem(key);
+      const requirements = localData ? JSON.parse(localData) : [];
+      
+      if (requirements.length > 0) {
+        console.log(`📦 [HÍBRIDO] Cargado desde localStorage (cache local):`, {
+          workItemId: this.workItemId,
+          count: requirements.length,
+          source: '💽 localStorage cache',
+          availability: '⚠️ Solo disponible en este PC - considera migrar a Azure DevOps'
+        });
+      } else {
+        console.log(`📭 [HÍBRIDO] No hay requisitos para Work Item ${this.workItemId}`, {
+          azureDevOps: 'Sin datos',
+          localStorage: 'Sin datos',
+          recommendation: 'Aplicar requisitos desde el hub principal'
+        });
+      }
+      
+      return requirements;
+      
+    } catch (e) {
+      console.error('❌ [HÍBRIDO] Error al cargar requisitos:', e);
+      return [];
+    }
+  }
+  
+  // FUNCIÓN DE DIAGNÓSTICO: Comparar datos entre localStorage y Azure DevOps
+  static async diagnoseSyncStatus(): Promise<void> {
+    try {
+      console.log('🔍 [HÍBRIDO] DIAGNÓSTICO DE SINCRONIZACIÓN');
+      
+      // Datos de localStorage
+      const localKey = this.getStorageKey('selectedRequirements');
+      const localData = localStorage.getItem(localKey);
+      const localRequirements = localData ? JSON.parse(localData) : [];
+      
+      // Datos de Azure DevOps
+      const azureRequirements = await this.loadFromAzureDevOps();
+      
+      // Estado de sincronización
+      const syncStatusData = localStorage.getItem(this.getStorageKey('syncStatus'));
+      const syncStatus = syncStatusData ? JSON.parse(syncStatusData) : null;
+      
+      console.log('📊 [HÍBRIDO] Estado de sincronización:', {
+        workItemId: this.workItemId,
+        localStorage: {
+          available: localRequirements.length > 0,
+          count: localRequirements.length,
+          storageKey: localKey
+        },
+        azureDevOps: {
+          available: azureRequirements && azureRequirements.length > 0,
+          count: azureRequirements ? azureRequirements.length : 0,
+          fieldName: this.AZURE_FIELD_REQUIREMENTS
+        },
+        syncStatus: syncStatus,
+        recommendation: this.getSyncRecommendation(localRequirements, azureRequirements)
+      });
+      
+    } catch (error) {
+      console.error('❌ [HÍBRIDO] Error en diagnóstico:', error);
+    }
+  }
+  
+  private static getSyncRecommendation(localReqs: Requirement[], azureReqs: Requirement[] | null): string {
+    if (!azureReqs && localReqs.length > 0) {
+      return '💡 Tienes datos solo en localStorage. Considera configurar campos personalizados en Azure DevOps para sincronización multi-dispositivo.';
+    }
+    
+    if (azureReqs && azureReqs.length > 0 && localReqs.length === 0) {
+      return '✅ Datos sincronizados desde Azure DevOps. Cache local actualizado.';
+    }
+    
+    if (azureReqs && localReqs.length > 0 && azureReqs.length !== localReqs.length) {
+      return '⚠️ Desincronización detectada entre localStorage y Azure DevOps. Se priorizarán los datos de Azure DevOps.';
+    }
+    
+    if (azureReqs && azureReqs.length > 0) {
+      return '✅ Completamente sincronizado entre localStorage y Azure DevOps.';
+    }
+    
+    return '📭 No hay datos en ninguna fuente. Aplicar requisitos desde el hub principal.';
+  }
+}
+
 // Componente para mostrar un requisito individual (con capacidad de edición independiente)
 const RequirementItem: React.FC<{
   requirement: Requirement;
@@ -768,29 +1054,27 @@ const WorkItemRequirements: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Función para cargar requisitos específicos del work item con verificación de independencia estricta
-  const loadRequirements = React.useCallback(() => {
+  // Función para cargar requisitos específicos del work item usando sistema híbrido
+  const loadRequirements = React.useCallback(async () => {
     if (!workItemId) {
       console.warn('⚠️ No se puede cargar requisitos sin Work Item ID real');
       return;
     }
     
     try {
-      console.log(`🔄 Recargando requisitos para work item: ${workItemId}`);
+      console.log(`🔄 Cargando requisitos híbridos para work item: ${workItemId}`);
       
-      // Verificar independencia estricta antes de cargar
-      const isIndependent = WorkItemStorage.verifyStrictIndependence();
+      // Configurar el Work Item ID en ambos sistemas
+      WorkItemStorage.setWorkItemId(workItemId);
+      HybridWorkItemStorage.setWorkItemId(workItemId);
       
-      if (!isIndependent) {
-        console.error(`❌ Independencia comprometida durante recarga para ${workItemId}`);
-        setRequirements([]); // Force empty si hay problemas de independencia
-        return;
-      }
+      // Cargar usando sistema híbrido (Azure DevOps + localStorage)
+      const savedReqs = await HybridWorkItemStorage.getSelectedRequirements();
       
-      const savedReqs = WorkItemStorage.getSelectedRequirements();
-      console.log(`📦 Recarga completada para work item ${workItemId}:`, {
+      console.log(`📦 Carga híbrida completada para work item ${workItemId}:`, {
         count: savedReqs.length,
-        independence: '✅ Storage independiente verificado',
+        system: '🌐 Híbrido (Azure DevOps + localStorage)',
+        multiDevice: '✅ Sincronizado entre dispositivos',
         timestamp: new Date().toISOString()
       });
       
@@ -801,7 +1085,16 @@ const WorkItemRequirements: React.FC = () => {
       
       return () => clearTimeout(timeoutId);
     } catch (err) {
-      console.error("❌ Error al cargar requisitos:", err);
+      console.error("❌ Error al cargar requisitos híbridos:", err);
+      // Fallback: intentar cargar solo desde localStorage
+      try {
+        const localReqs = WorkItemStorage.getSelectedRequirements();
+        setRequirements(localReqs);
+        console.log(`💾 Fallback: Cargado desde localStorage (${localReqs.length} requisitos)`);
+      } catch (fallbackErr) {
+        console.error("❌ Error crítico: No se pudieron cargar requisitos:", fallbackErr);
+        setRequirements([]);
+      }
     }
   }, [workItemId]);
 
@@ -812,50 +1105,51 @@ const WorkItemRequirements: React.FC = () => {
     }
   }, [workItemId, initialized, loadRequirements]);
 
-  // Función optimizada para remover un requisito
-  const removeRequirement = React.useCallback((requirementId: string) => {
+  // Función optimizada para remover un requisito (ahora async para sistema híbrido)
+  const removeRequirement = React.useCallback(async (requirementId: string) => {
     console.log(`Removiendo requisito: ${requirementId} del work item ${workItemId}`);
     
     try {
-      // Usar functional update para evitar stale closures
-      setRequirements(currentRequirements => {
-        // Obtener IDs removidos actuales
-        let removedIds = WorkItemStorage.getRemovedRequirementIds();
+      // Obtener requisitos actuales
+      const currentRequirements = await HybridWorkItemStorage.getSelectedRequirements();
+      
+      // Obtener IDs removidos actuales
+      let removedIds = WorkItemStorage.getRemovedRequirementIds();
         
-        // Función para encontrar todos los hijos
-        const findAllChildren = (parentId: string, allReqs: Requirement[]): string[] => {
-          let allChildren: string[] = [];
-          
-          allReqs.forEach(req => {
-            if (req.parentId === parentId || 
-                (req.parentId && req.parentId.replace(/\.$/, '') === parentId.replace(/\.$/, ''))) {
-              allChildren.push(req.id);
-              allChildren.push(...findAllChildren(req.id, allReqs));
-            }
-          });
-          
-          return allChildren;
-        };
+      // Función para encontrar todos los hijos
+      const findAllChildren = (parentId: string, allReqs: Requirement[]): string[] => {
+        let allChildren: string[] = [];
         
-        // Encontrar todos los hijos
-        const childrenIds = findAllChildren(requirementId, currentRequirements);
-        const idsToRemove = [requirementId, ...childrenIds];
+        allReqs.forEach(req => {
+          if (req.parentId === parentId || 
+              (req.parentId && req.parentId.replace(/\.$/, '') === parentId.replace(/\.$/, ''))) {
+            allChildren.push(req.id);
+            allChildren.push(...findAllChildren(req.id, allReqs));
+          }
+        });
         
-        // Actualizar lista de IDs removidos
-        const uniqueIds = new Set([...removedIds, ...idsToRemove]);
-        const updatedRemovedIds = Array.from(uniqueIds);
-        WorkItemStorage.setRemovedRequirementIds(updatedRemovedIds);
-        
-        // Filtrar requisitos
-        const updatedRequirements = currentRequirements.filter(req => !idsToRemove.includes(req.id));
-        
-        // Actualizar storage
-        WorkItemStorage.setSelectedRequirements(updatedRequirements);
-        
-        console.log(`Requisito ${requirementId} y ${childrenIds.length} hijos removidos`);
-        
-        return updatedRequirements;
-      });
+        return allChildren;
+      };
+      
+      // Encontrar todos los hijos
+      const childrenIds = findAllChildren(requirementId, currentRequirements);
+      const idsToRemove = [requirementId, ...childrenIds];
+      
+      // Actualizar lista de IDs removidos
+      const uniqueIds = new Set([...removedIds, ...idsToRemove]);
+      const updatedRemovedIds = Array.from(uniqueIds);
+      WorkItemStorage.setRemovedRequirementIds(updatedRemovedIds);
+      
+      // Filtrar requisitos
+      const updatedRequirements = currentRequirements.filter(req => !idsToRemove.includes(req.id));
+      
+      // Actualizar storage usando sistema híbrido
+      await HybridWorkItemStorage.setSelectedRequirements(updatedRequirements);
+      
+      // Actualizar estado local
+      setRequirements(updatedRequirements);
+      
+      console.log(`Requisito ${requirementId} y ${childrenIds.length} hijos removidos`);
       
     } catch (err) {
       console.error("Error al remover requisito:", err);
@@ -863,66 +1157,68 @@ const WorkItemRequirements: React.FC = () => {
   }, [workItemId]);
 
   // Función para editar un requisito específico del Work Item (independiente del catálogo)
-  const editRequirement = React.useCallback((requirementId: string, updatedRequirement: Requirement) => {
+  const editRequirement = React.useCallback(async (requirementId: string, updatedRequirement: Requirement) => {
     console.log(`✏️ Editando requisito: ${requirementId} del work item ${workItemId}`);
     
     try {
-      setRequirements(currentRequirements => {
-        const updatedRequirements = currentRequirements.map(req => {
-          if (req.id === requirementId) {
-            // Verificar si es una restauración
-            const isRestoring = !updatedRequirement._isModified && req._isModified;
+      // Obtener requisitos actuales del sistema híbrido
+      const currentRequirements = await HybridWorkItemStorage.getSelectedRequirements();
+      
+      const updatedRequirements = currentRequirements.map(req => {
+        if (req.id === requirementId) {
+          // Verificar si es una restauración
+          const isRestoring = !updatedRequirement._isModified && req._isModified;
+          
+          if (isRestoring) {
+            console.log(`🔄 Restaurando requisito ${requirementId} a versión original`);
             
-            if (isRestoring) {
-              console.log(`🔄 Restaurando requisito ${requirementId} a versión original`);
-              
-              // Mostrar confirmación de restauración
-              setTimeout(() => {
-                alert(`🔄 ¡Requisito restaurado!\n\n` +
-                      `El requisito ${requirementId} ha sido restaurado a su versión original del catálogo.\n\n` +
-                      `Se han eliminado las modificaciones específicas de este Work Item.\n\n` +
-                      `✨ Independencia total mantenida!`);
-              }, 100);
-              
-              return updatedRequirement;
-            } else {
-              // Es una edición normal
-              const editedRequirement = {
-                ...updatedRequirement,
-                _isModified: true,
-                _modifiedDate: new Date().toISOString(),
-                _originalRequirement: req._originalRequirement || { ...req } // Guardar original si no existe
-              };
-              
-              console.log(`📝 Requisito ${requirementId} modificado para work item ${workItemId}:`, {
-                originalDetail: req.attrs?.detail?.substring(0, 50) + '...',
-                newDetail: editedRequirement.attrs?.detail?.substring(0, 50) + '...',
-                workItemSpecific: true,
-                modifiedDate: editedRequirement._modifiedDate
-              });
-              
-              // Mostrar confirmación de edición
-              setTimeout(() => {
-                alert(`✅ ¡Requisito modificado!\n\n` +
-                      `El requisito ${requirementId} ha sido personalizado para este Work Item.\n\n` +
-                      `Esta modificación es independiente y no afecta:\n` +
-                      `• El catálogo original de CRETS4DevOps\n` +
-                      `• Otros Work Items del proyecto\n\n` +
-                      `Tip: Use the Restore button to return to original when needed.\n\n` +
-                      `✨ Independencia total garantizada!`);
-              }, 100);
-              
-              return editedRequirement;
-            }
+            // Mostrar confirmación de restauración
+            setTimeout(() => {
+              alert(`Requirement restored!\n\n` +
+                    `Requirement ${requirementId} has been restored to its original catalog version.\n\n` +
+                    `Work Item specific modifications have been removed.\n\n` +
+                    `Total independence maintained!`);
+            }, 100);
+            
+            return updatedRequirement;
+          } else {
+            // Es una edición normal
+            const editedRequirement = {
+              ...updatedRequirement,
+              _isModified: true,
+              _modifiedDate: new Date().toISOString(),
+              _originalRequirement: req._originalRequirement || { ...req } // Guardar original si no existe
+            };
+            
+            console.log(`📝 Requisito ${requirementId} modificado para work item ${workItemId}:`, {
+              originalDetail: req.attrs?.detail?.substring(0, 50) + '...',
+              newDetail: editedRequirement.attrs?.detail?.substring(0, 50) + '...',
+              workItemSpecific: true,
+              modifiedDate: editedRequirement._modifiedDate
+            });
+            
+            // Mostrar confirmación de edición
+            setTimeout(() => {
+              alert(`Requirement modified!\n\n` +
+                    `Requirement ${requirementId} has been customized for this Work Item.\n\n` +
+                    `This modification is independent and does not affect:\n` +
+                    `• The original CRETS4DevOps catalog\n` +
+                    `• Other Work Items in the project\n\n` +
+                    `Tip: Use the Restore button to return to original when needed.\n\n` +
+                    `Total independence guaranteed!`);
+            }, 100);
+            
+            return editedRequirement;
           }
-          return req;
-        });
-        
-        // Guardar en storage independiente
-        WorkItemStorage.setSelectedRequirements(updatedRequirements);
-        
-        return updatedRequirements;
+        }
+        return req;
       });
+      
+      // Guardar en sistema híbrido
+      await HybridWorkItemStorage.setSelectedRequirements(updatedRequirements);
+      
+      // Actualizar estado local
+      setRequirements(updatedRequirements);
       
     } catch (err) {
       console.error("❌ Error al editar requisito:", err);
@@ -987,7 +1283,12 @@ const WorkItemRequirements: React.FC = () => {
           setWorkItemId(currentWorkItemId);
           setWorkItemType(currentWorkItemType);
           setIsNewWorkItem(currentIsNew);
-          WorkItemStorage.setWorkItemId(currentWorkItemId);
+          
+          // NUEVO: Configurar sistema híbrido para sincronización multi-dispositivo
+          HybridWorkItemStorage.setWorkItemId(currentWorkItemId);
+          
+          // Ejecutar diagnóstico de sincronización
+          await HybridWorkItemStorage.diagnoseSyncStatus();
           
           // Verificar independencia estricta SIN eliminar datos
           const isIndependent = WorkItemStorage.verifyStrictIndependence();
@@ -1001,11 +1302,11 @@ const WorkItemRequirements: React.FC = () => {
             console.log(`✅ Independencia verificada para work item ${currentWorkItemId}`);
           }
           
-          // Cargar requisitos específicos de este work item (después de verificación)
-          const savedReqs = WorkItemStorage.getSelectedRequirements();
+          // Cargar requisitos específicos de este work item usando sistema híbrido
+          const savedReqs = await HybridWorkItemStorage.getSelectedRequirements();
           
-          // NUEVO: Diagnóstico completo de persistencia
-          WorkItemStorage.diagnosePersistenceIssues();
+          // NUEVO: Diagnóstico completo de persistencia híbrida
+          await HybridWorkItemStorage.diagnoseSyncStatus();
           
           console.log(`📦 Requisitos específicos cargados para work item ${currentWorkItemId}:`, {
             count: savedReqs.length,

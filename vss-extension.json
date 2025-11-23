@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "id": "plugin-crets-v2",
   "publisher": "rogeliofha",
-  "version": "2.5.5",
+  "version": "2.5.8",
   "name": "CRETS4DevOps",
   "description": "CRETS4DevOps - Enhanced extension for advanced sustainability requirements management with independent work item support",
   "public": false,

@@ -1,7 +1,7 @@
 {
   "name": "plugin-crets-v2",
-  "version": "2.5.5",
-  "description": "CRETS4DevOps - Enhanced Azure DevOps Extension for sustainability requirements management",
+  "version": "2.5.8",
+  "description": "CRETS4DevOps - Enhanced Azure DevOps Extension with multi-device synchronization",
   "main": "index.js",
   "scripts": {
     "build": "webpack --mode=production",
