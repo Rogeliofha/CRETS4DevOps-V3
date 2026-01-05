@@ -203,7 +203,7 @@ const RequirementEditForm: React.FC<{
       <h2>Edit Requirement</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="displayCode">Code</label>
+          <label htmlFor="displayCode">Identifier</label>
           <input
             type="text"
             id="displayCode"
@@ -463,7 +463,7 @@ const RequirementCreateForm: React.FC<{
       {error && <div className="form-error">{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="displayCode">Code *</label>
+          <label htmlFor="displayCode">Identifier *</label>
           <input
             type="text"
             id="displayCode"
@@ -957,7 +957,7 @@ const SustainabilityRequirements: React.FC = () => {
     return checkedRequirements.includes(reqId);
   };
 
-  // Función para mostrar los requisitos seleccionados en el Work Item (mejorada)
+  // Función para mostrar los requisitos seleccionados en el Work Item
   const saveSelectedRequirements = () => {
     if (checkedRequirements.length === 0) {
       alert('⚠️ Por favor selecciona al menos un requisito de sostenibilidad antes de aplicar.');
@@ -966,11 +966,11 @@ const SustainabilityRequirements: React.FC = () => {
     
     // Mostrar ventana emergente de confirmación
     const confirmMessage = `Apply Sustainability Requirements\n\n` +
-      `${checkedRequirements.length} sustainability requirement(s) will be applied.\n\n` +
-      `✅ Requirements will be independent per Work Item\n` +
-      `✅ Will not affect other Work Items in the project\n` +
-      `✅ Can be removed individually\n\n` +
-      `Do you want to continue?`;
+      `Found ${checkedRequirements.length} requirement(s) ready to apply to this Work Item.\n\n` +
+      `- Will be independent (do not affect other Work Items)\n` +
+      `- Can be removed individually\n` +
+      `- Will be synchronized across all devices and browsers\n\n` +
+      `Do you want to apply these requirements now?`;
     
     if (!confirm(confirmMessage)) {
       console.log('User cancelled requirements application');
@@ -994,11 +994,11 @@ const SustainabilityRequirements: React.FC = () => {
       
       console.log(`🚀 Preparing ${newSelectedReqs.length} requirements for independent application`);
       
-      // Sistema de comunicación mejorado con múltiples estrategias
+      // Sistema de comunicación con múltiples estrategias
       const timestamp = Date.now();
       const pendingKey = `pending_requirements_${timestamp}`;
       
-      // ESTRATEGIA 1: localStorage como puente principal
+      // ESTRATEGIA 1: localStorage como puente principal (el Work Item leerá de aquí y guardará en Azure)
       try {
         localStorage.setItem(pendingKey, JSON.stringify(newSelectedReqs));
         
@@ -1008,11 +1008,11 @@ const SustainabilityRequirements: React.FC = () => {
           count: newSelectedReqs.length,
           timestamp: timestamp,
           source: 'CRETS4DevOps-Hub',
-          version: '2.1.4'
+          version: '2.5.15'
         };
         
         localStorage.setItem('requirements_pending', JSON.stringify(pendingData));
-        console.log('✅ Datos guardados en localStorage:', pendingData);
+        console.log('✅ Datos guardados en localStorage (el Work Item los sincronizará con Azure DevOps):', pendingData);
       } catch (storageError) {
         console.error('❌ Error en localStorage:', storageError);
         alert('Error guardando requisitos. Por favor intenta nuevamente.');
@@ -1099,9 +1099,9 @@ const SustainabilityRequirements: React.FC = () => {
       }
       
       console.log(`🎯 Requisitos preparados con clave: ${pendingKey}`);
-      console.log(`📊 Total de estrategias de comunicación ejecutadas: 5`);
+      console.log(`📊 Los requisitos serán sincronizados con Azure DevOps por el Work Item`);
       
-      // ESTRATEGIA 6: Disparar evento de refresco para Work Items abiertos 🔄
+      // ESTRATEGIA 6: Disparar evento de refresco para Work Items abiertos
       try {
         const refreshEvent = new CustomEvent('crets.refresh', { 
           detail: { 
@@ -1125,25 +1125,25 @@ const SustainabilityRequirements: React.FC = () => {
       }
       
       // Mostrar feedback al usuario
-      alert(`✅ ${newSelectedReqs.length} requirement(s) prepared for application!\n\n` +
-            `Requirements will be automatically applied when opening a Work Item.\n` +
-            `If you have a Work Item open, the section will update automatically.\n\n` +
-            `🔄 Auto-refresh activated!`);
+      alert(`✅ Success!\n\n` +
+            `${newSelectedReqs.length} requirement(s) sent to Work Item.\n\n` +
+            `The Work Item will synchronize them with Azure DevOps automatically.`);
       
       // Limpiar la selección actual después de un delay reducido
       setTimeout(() => {
         setCheckedRequirements([]);
         setShowSelectedPanel(false);
         console.log('🧹 Selection cleared');
-      }, 2000); // Tiempo reducido para mejor UX
+      }, 2000);
       
     } catch (e) {
       console.error('Error preparing requirements for application:', e);
+      alert('Error applying requirements. See console for details.');
     }
   };
 
   // Remover un requisito de la selección
-  const removeSelectedRequirement = (reqId: string) => {
+  const removeSelectedRequirementFromList = (reqId: string) => {
     setCheckedRequirements(prev => prev.filter(id => id !== reqId));
   };
 
@@ -1207,7 +1207,7 @@ const SustainabilityRequirements: React.FC = () => {
                     <span className="requirement-detail">{req.attrs.detail}</span>
                     <button 
                       className="remove-button"
-                      onClick={() => removeSelectedRequirement(req.id)}
+                      onClick={() => removeSelectedRequirementFromList(req.id)}
                     >
                       X
                     </button>

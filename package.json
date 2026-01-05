@@ -1,6 +1,6 @@
 {
   "name": "plugin-crets-v2",
-  "version": "2.5.8",
+  "version": "2.5.20",
   "description": "CRETS4DevOps - Enhanced Azure DevOps Extension with multi-device synchronization",
   "main": "index.js",
   "scripts": {

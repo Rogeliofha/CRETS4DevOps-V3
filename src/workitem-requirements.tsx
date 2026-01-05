@@ -101,9 +101,7 @@ class WorkItemStorage {
         independence: `Exclusivo para work item ${this.workItemId}`,
         requirementIds: requirements.map(r => r.id).slice(0, 3), // Primeros 3 IDs para debug
         verificationSuccess: verificationSuccess,
-        timestamp: new Date().toISOString(),
-        domain: window.location.hostname,
-        userAgent: navigator.userAgent.substring(0, 50) + '...'
+        timestamp: new Date().toISOString()
       });
       
       // Log adicional para debugging de persistencia
@@ -206,10 +204,8 @@ class WorkItemStorage {
     
     // Verificar contexto de Azure DevOps
     console.log('🌐 Contexto de navegador:', {
-      hostname: window.location.hostname,
       protocol: window.location.protocol,
       origin: window.location.origin,
-      userAgent: navigator.userAgent.substring(0, 100) + '...',
       cookiesEnabled: navigator.cookieEnabled,
       localStorageAvailable: typeof(Storage) !== "undefined"
     });
@@ -400,22 +396,51 @@ class HybridWorkItemStorage {
         WorkItemTrackingServiceIds.WorkItemFormService
       );
       
-      // Preparar datos para guardar
+      // Preparar datos optimizados - solo campos esenciales
+      const optimizedRequirements = requirements.map(req => ({
+        id: req.id,
+        displayCode: req.displayCode,
+        ...(req.parentId && { parentId: req.parentId }),
+        ...(req.children && req.children.length > 0 && { children: req.children }),
+        ...(req.level !== undefined && { level: req.level }),
+        attrs: {
+          detail: req.attrs.detail,
+          ...(req.attrs.Justification && { Justification: req.attrs.Justification }),
+          ...(req.attrs.Discussion && { Discussion: req.attrs.Discussion })
+        }
+      }));
+      
       const dataToSave = {
-        requirements: requirements,
+        requirements: optimizedRequirements,
         metadata: {
           count: requirements.length,
           lastModified: new Date().toISOString(),
-          version: '2.5.8',
-          workItemId: this.workItemId,
-          device: navigator.userAgent.substring(0, 50) + '...'
+          version: '2.5.17',
+          workItemId: this.workItemId
         }
       };
+      
+      // Serializar sin espacios para minimizar tamaño
+      const jsonData = JSON.stringify(dataToSave);
+      const dataSize = new Blob([jsonData]).size;
+      
+      console.log(`📊 Tamaño de datos a guardar: ${dataSize} bytes (${Math.round(dataSize/1024)} KB)`);
+      
+      // Azure DevOps típicamente limita campos de texto a 32,000 caracteres
+      if (jsonData.length > 32000) {
+        console.error(`❌ Datos demasiado grandes: ${jsonData.length} caracteres (límite: 32,000)`);
+        console.error(`💡 Reduce el número de requisitos o simplifica los textos`);
+        throw new Error(`Data too large: ${jsonData.length} chars exceeds Azure DevOps field limit (32,000)`);
+      }
+      
+      if (jsonData.length > 20000) {
+        console.warn(`⚠️ ADVERTENCIA: Datos cercanos al límite (${jsonData.length}/32000 caracteres)`);
+      }
       
       // Intentar guardar en campos personalizados de Azure DevOps
       await workItemFormService.setFieldValue(
         this.AZURE_FIELD_REQUIREMENTS, 
-        JSON.stringify(dataToSave)
+        jsonData
       );
       
       await workItemFormService.setFieldValue(
@@ -425,11 +450,12 @@ class HybridWorkItemStorage {
       
       await workItemFormService.setFieldValue(
         this.AZURE_FIELD_VERSION, 
-        '2.5.8'
+        '2.5.17'
       );
       
       console.log(`☁️ [HÍBRIDO] Datos guardados en Azure DevOps para Work Item ${this.workItemId}:`, {
         requirementsCount: requirements.length,
+        dataSize: `${dataSize} bytes`,
         timestamp: new Date().toISOString(),
         azureFields: {
           requirements: this.AZURE_FIELD_REQUIREMENTS,
@@ -452,36 +478,66 @@ class HybridWorkItemStorage {
   static async loadFromAzureDevOps(): Promise<Requirement[] | null> {
     try {
       if (!this.workItemId) {
+        console.error('❌ [HÍBRIDO] No se puede cargar - Work Item ID no configurado');
         return null;
       }
+      
+      console.log(`🔍 [HÍBRIDO] Intentando cargar desde Azure DevOps para Work Item ${this.workItemId}...`);
       
       const workItemFormService = await SDK.getService<IWorkItemFormService>(
         WorkItemTrackingServiceIds.WorkItemFormService
       );
       
+      console.log(`📡 [HÍBRIDO] Servicio obtenido, leyendo campo: ${this.AZURE_FIELD_REQUIREMENTS}`);
+      
       // Intentar cargar desde campos personalizados
       const fieldValue = await workItemFormService.getFieldValue(this.AZURE_FIELD_REQUIREMENTS);
       
+      console.log(`📊 [HÍBRIDO] Valor del campo obtenido:`, {
+        hasValue: !!fieldValue,
+        valueType: typeof fieldValue,
+        valueLength: fieldValue ? (fieldValue as string).length : 0,
+        preview: fieldValue ? (fieldValue as string).substring(0, 100) + '...' : 'null'
+      });
+      
       if (!fieldValue) {
         console.log(`📭 [HÍBRIDO] No hay datos en Azure DevOps para Work Item ${this.workItemId}`);
+        console.log(`💡 [HÍBRIDO] Verifica que el campo '${this.AZURE_FIELD_REQUIREMENTS}' exista y tenga datos`);
         return null;
       }
       
-      const parsedData = JSON.parse(fieldValue as string);
+      // Decodificar HTML entities si es necesario (Azure DevOps puede devolver HTML-encoded)
+      let jsonString = fieldValue as string;
+      
+      // Verificar si está HTML-encoded
+      if (jsonString.includes('&quot;') || jsonString.includes('&lt;') || jsonString.includes('&gt;')) {
+        console.log('🔧 [HÍBRIDO] Decodificando HTML entities...');
+        
+        // Crear un elemento temporal para decodificar
+        const textArea = document.createElement('textarea');
+        textArea.innerHTML = jsonString;
+        jsonString = textArea.value;
+        
+        console.log('✅ [HÍBRIDO] HTML decodificado correctamente');
+      }
+      
+      const parsedData = JSON.parse(jsonString);
       const requirements = parsedData.requirements || [];
       
       console.log(`☁️ [HÍBRIDO] Datos cargados desde Azure DevOps para Work Item ${this.workItemId}:`, {
         requirementsCount: requirements.length,
         lastModified: parsedData.metadata?.lastModified,
         version: parsedData.metadata?.version,
-        originalDevice: parsedData.metadata?.device,
+        workItemId: parsedData.metadata?.workItemId,
         multiDeviceSync: '✅ Sincronizado entre dispositivos'
       });
       
       return requirements;
       
     } catch (error) {
-      console.warn(`⚠️ [HÍBRIDO] No se pudo cargar desde Azure DevOps:`, error);
+      console.error(`❌ [HÍBRIDO] ERROR al cargar desde Azure DevOps:`, error);
+      console.error(`   Work Item ID: ${this.workItemId}`);
+      console.error(`   Campo buscado: ${this.AZURE_FIELD_REQUIREMENTS}`);
       return null;
     }
   }
@@ -510,8 +566,7 @@ class HybridWorkItemStorage {
         localStorage: true,
         azureDevOps: azureSuccess,
         timestamp: new Date().toISOString(),
-        requirementsCount: requirements.length,
-        device: navigator.userAgent.substring(0, 50) + '...'
+        requirementsCount: requirements.length
       };
       
       localStorage.setItem(
@@ -527,6 +582,22 @@ class HybridWorkItemStorage {
         azureDevOps: azureSuccess ? '✅ Sincronizado (multi-dispositivo)' : '⚠️ Fallback (solo este PC)',
         availability: azureSuccess ? '🌐 Disponible en todos los dispositivos' : '💻 Solo disponible en este PC'
       });
+      
+      // ALERTA: Si Azure DevOps falló, notificar al usuario
+      if (!azureSuccess) {
+        console.warn('⚠️⚠️⚠️ ADVERTENCIA DE SINCRONIZACIÓN ⚠️⚠️⚠️');
+        console.warn('Los requisitos se guardaron SOLO en localStorage (este navegador/PC).');
+        console.warn('NO estarán disponibles en:');
+        console.warn('  - Otros navegadores');
+        console.warn('  - Otras computadoras');
+        console.warn('  - Después de limpiar caché del navegador');
+        console.warn('');
+        console.warn('SOLUCIÓN: Configura los campos personalizados en Azure DevOps:');
+        console.warn('  1. Custom.SustainabilityRequirements (Long Text)');
+        console.warn('  2. Custom.SustainabilityLastModified (DateTime)');
+        console.warn('  3. Custom.SustainabilityVersion (Text)');
+        console.warn('Consulta la documentación en docs/CONFIGURATION.md');
+      }
       
     } catch (e: any) {
       console.error('❌ [HÍBRIDO] Error en guardado:', e);
@@ -559,8 +630,11 @@ class HybridWorkItemStorage {
           source: '☁️ Azure DevOps Work Item Fields',
           availability: '🌐 Sincronizado entre todos los dispositivos'
         });
+        console.log('✅ Sincronización multi-dispositivo ACTIVA');
         
         return azureData;
+      } else {
+        console.warn('⚠️ Azure DevOps no retornó datos - verificando localStorage local...');
       }
       
       // 2. Fallback: cargar desde localStorage (solo este dispositivo)
@@ -568,11 +642,18 @@ class HybridWorkItemStorage {
       const requirements = localData ? JSON.parse(localData) : [];
       
       if (requirements.length > 0) {
-        console.log(`📦 [HÍBRIDO] Cargado desde localStorage (cache local):`, {
+        console.warn(`⚠️⚠️⚠️ DATOS SOLO LOCALES ⚠️⚠️⚠️`);
+        console.warn(`📦 Cargados ${requirements.length} requisitos desde localStorage`);
+        console.warn('❌ NO están sincronizados con Azure DevOps');
+        console.warn('❌ NO estarán disponibles en otros navegadores/computadoras');
+        console.warn('💡 ACCIÓN REQUERIDA: Configura campos personalizados en Azure DevOps');
+        console.warn('   Ver documentación: docs/CONFIGURATION.md');
+        
+        console.log(`📦 [HÍBRIDO] Detalles de carga local:`, {
           workItemId: this.workItemId,
           count: requirements.length,
-          source: '💽 localStorage cache',
-          availability: '⚠️ Solo disponible en este PC - considera migrar a Azure DevOps'
+          source: '💽 localStorage (solo este navegador)',
+          limitation: '⚠️ Solo disponible en este PC/navegador'
         });
       } else {
         console.log(`📭 [HÍBRIDO] No hay requisitos para Work Item ${this.workItemId}`, {
@@ -646,6 +727,29 @@ class HybridWorkItemStorage {
     }
     
     return '📭 No hay datos en ninguna fuente. Aplicar requisitos desde el hub principal.';
+  }
+  
+  // NUEVA FUNCIÓN: Verificar disponibilidad de Azure DevOps
+  static async checkAzureDevOpsAvailability(): Promise<boolean> {
+    try {
+      if (!this.workItemId) {
+        return false;
+      }
+      
+      const workItemFormService = await SDK.getService<IWorkItemFormService>(
+        WorkItemTrackingServiceIds.WorkItemFormService
+      );
+      
+      // Intentar leer un campo personalizado para verificar si existe
+      const fieldValue = await workItemFormService.getFieldValue(this.AZURE_FIELD_REQUIREMENTS);
+      
+      console.log('✅ Azure DevOps disponible - Campos personalizados accesibles');
+      return true;
+      
+    } catch (error) {
+      console.warn('❌ Azure DevOps NO disponible - Campos personalizados no configurados:', error);
+      return false;
+    }
   }
 }
 
@@ -941,6 +1045,8 @@ const WorkItemRequirements: React.FC = () => {
   const [isNewWorkItem, setIsNewWorkItem] = React.useState<boolean>(false);
   const [initialized, setInitialized] = React.useState(false);
   const [isProcessingRequirements, setIsProcessingRequirements] = React.useState(false);
+  const [azureDevOpsAvailable, setAzureDevOpsAvailable] = React.useState<boolean | null>(null);
+  const [showSyncWarning, setShowSyncWarning] = React.useState(false);
 
   // Obtener ID del work item usando el WorkItemFormService correcto de Azure DevOps
   const getWorkItemId = React.useCallback(async (): Promise<{id: string, type: string | null, isNew: boolean} | null> => {
@@ -1067,6 +1173,16 @@ const WorkItemRequirements: React.FC = () => {
       // Configurar el Work Item ID en ambos sistemas
       WorkItemStorage.setWorkItemId(workItemId);
       HybridWorkItemStorage.setWorkItemId(workItemId);
+      
+      // Verificar disponibilidad de Azure DevOps
+      const azureAvailable = await HybridWorkItemStorage.checkAzureDevOpsAvailability();
+      setAzureDevOpsAvailable(azureAvailable);
+      
+      if (!azureAvailable) {
+        setShowSyncWarning(true);
+        console.warn('⚠️⚠️⚠️ ADVERTENCIA: Azure DevOps NO disponible ⚠️⚠️⚠️');
+        console.warn('Los datos se guardarán SOLO en localStorage (no sincronizado)');
+      }
       
       // Cargar usando sistema híbrido (Azure DevOps + localStorage)
       const savedReqs = await HybridWorkItemStorage.getSelectedRequirements();
@@ -1376,7 +1492,7 @@ const WorkItemRequirements: React.FC = () => {
           });
           
           // Función para manejar requisitos desde diferentes fuentes (mejorada v2.1.4)
-          const handleNewRequirements = (requirements: Requirement[], count: number, pendingKey?: string, source?: string) => {
+          const handleNewRequirements = async (requirements: Requirement[], count: number, pendingKey?: string, source?: string) => {
             if (isCleanedUp || isProcessingRequirements) {
               console.log('⚠️ Operación cancelada - componente limpio o procesando');
               return;
@@ -1410,33 +1526,66 @@ const WorkItemRequirements: React.FC = () => {
               const shouldApply = window.confirm(confirmMessage);
               
               if (shouldApply && !isCleanedUp) {
-                // Usar functional update para evitar stale closures
-                setRequirements(currentReqs => {
-                  console.log(`📦 Combining existing requirements (${currentReqs.length}) with new ones (${requirements.length})`);
-                  
-                  // Combinar sin duplicar
-                  const combinedReqs = [...currentReqs];
-                  let newlyAdded = 0;
-                  
-                  requirements.forEach((newReq: Requirement) => {
-                    if (!combinedReqs.some(existing => existing.id === newReq.id)) {
-                      combinedReqs.push(newReq);
-                      newlyAdded++;
-                    }
-                  });
-                  
-                  // Guardar en storage
-                  WorkItemStorage.setSelectedRequirements(combinedReqs);
-                  
-                  console.log(`✅ ${newlyAdded} new requirements applied (total: ${combinedReqs.length})`);
-                  
-                  // Mostrar notificación de éxito
-                  setTimeout(() => {
-                    alert(`✅ Success!\n\n${newlyAdded} requirement(s) applied to Work Item.\n\nTotal requirements: ${combinedReqs.length}`);
-                  }, 100);
-                  
-                  return combinedReqs;
+                console.log(`📦 Combining existing requirements (${requirements.length}) with new ones from hub`);
+                
+                // Obtener requisitos actuales
+                const currentReqs = await HybridWorkItemStorage.getSelectedRequirements();
+                
+                // Combinar sin duplicar
+                const combinedReqs = [...currentReqs];
+                let newlyAdded = 0;
+                
+                requirements.forEach((newReq: Requirement) => {
+                  if (!combinedReqs.some(existing => existing.id === newReq.id)) {
+                    combinedReqs.push(newReq);
+                    newlyAdded++;
+                  }
                 });
+                
+                // CRÍTICO: Guardar PRIMERO en Azure DevOps antes de actualizar UI
+                console.log('💾 Guardando en sistema híbrido (Azure DevOps + localStorage)...');
+                
+                try {
+                  await HybridWorkItemStorage.setSelectedRequirements(combinedReqs);
+                  
+                  // Ejecutar diagnóstico para confirmar guardado
+                  await HybridWorkItemStorage.diagnoseSyncStatus();
+                  
+                  // Actualizar el estado de React DESPUÉS de guardar exitosamente
+                  setRequirements(combinedReqs);
+                  
+                  console.log(`✅ ${newlyAdded} new requirements applied and saved (total: ${combinedReqs.length})`);
+                  
+                  // Verificar si se guardó en Azure DevOps
+                  const azureCheck = await HybridWorkItemStorage.loadFromAzureDevOps();
+                  const syncedToAzure = azureCheck && azureCheck.length > 0;
+                  
+                  // Mostrar notificación con información de sincronización
+                  const successMessage = syncedToAzure
+                    ? `✅ Success!\n\n${newlyAdded} requirement(s) applied to Work Item.\n\nTotal requirements: ${combinedReqs.length}\n\n🌐 Synchronized with Azure DevOps\nAvailable on all devices and browsers!`
+                    : `⚠️ Partial Success\n\n${newlyAdded} requirement(s) applied to Work Item.\n\nTotal requirements: ${combinedReqs.length}\n\n⚠️ Only saved locally (this browser/PC)\n\nREQUIRED: Configure Azure DevOps custom fields\nSee console for instructions`;
+                  
+                  alert(successMessage);
+                  
+                  if (!syncedToAzure) {
+                    console.error('❌❌❌ REQUISITOS NO SINCRONIZADOS CON AZURE DEVOPS ❌❌❌');
+                    console.error('📋 ACCIÓN REQUERIDA: Configurar campos personalizados');
+                    console.error('Campos necesarios en Azure DevOps Process Template:');
+                    console.error('  1. Custom.SustainabilityRequirements (Long Text, 4000 chars)');
+                    console.error('  2. Custom.SustainabilityLastModified (DateTime)');
+                    console.error('  3. Custom.SustainabilityVersion (Text, 50 chars)');
+                    console.error('Documentación: docs/CONFIGURATION.md');
+                  }
+                  
+                } catch (err) {
+                  console.error('⚠️ Error guardando en sistema híbrido:', err);
+                  
+                  // Fallback a localStorage solamente
+                  WorkItemStorage.setSelectedRequirements(combinedReqs);
+                  setRequirements(combinedReqs);
+                  
+                  alert(`⚠️ Requirements saved locally only\n\n${newlyAdded} requirement(s) applied.\n\nWARNING: Not synchronized with Azure DevOps\nThey will only appear on this browser/computer.\n\nConfigure custom fields for multi-device sync.`);
+                }
               } else {
                 console.log('❌ Usuario rechazó aplicar los requisitos');
               }
@@ -1678,6 +1827,63 @@ const WorkItemRequirements: React.FC = () => {
 
   return (
     <div className={`workitem-requirements-container ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+      
+      {/* Alerta de sincronización cuando Azure DevOps no está disponible */}
+      {showSyncWarning && azureDevOpsAvailable === false && (
+        <div style={{
+          backgroundColor: '#fff3cd',
+          border: '2px solid #ff6b6b',
+          borderRadius: '6px',
+          padding: '15px',
+          margin: '10px 0 20px 0',
+          color: '#856404'
+        }}>
+          <h3 style={{ margin: '0 0 10px 0', color: '#d32f2f', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            ⚠️ Sincronización Multi-Dispositivo NO Disponible
+            <button
+              onClick={() => setShowSyncWarning(false)}
+              style={{
+                marginLeft: 'auto',
+                background: 'transparent',
+                border: 'none',
+                fontSize: '20px',
+                cursor: 'pointer',
+                color: '#856404'
+              }}
+              title="Cerrar advertencia"
+            >
+              ×
+            </button>
+          </h3>
+          <p style={{ margin: '0 0 10px 0', fontSize: '14px' }}>
+            <strong>Los requisitos se guardarán SOLO en este navegador/computadora.</strong>
+          </p>
+          <p style={{ margin: '0 0 10px 0', fontSize: '13px' }}>
+            ❌ NO estarán disponibles en:<br />
+            • Otros navegadores web<br />
+            • Otras computadoras<br />
+            • Después de limpiar caché del navegador
+          </p>
+          <details style={{ marginTop: '10px' }}>
+            <summary style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}>
+              ℹ️ Cómo habilitar sincronización multi-dispositivo
+            </summary>
+            <div style={{ marginTop: '10px', padding: '10px', backgroundColor: '#ffffff', borderRadius: '4px' }}>
+              <p style={{ margin: '0 0 8px 0', fontSize: '12px' }}>
+                <strong>Configurar campos personalizados en Azure DevOps:</strong>
+              </p>
+              <ol style={{ margin: '0', paddingLeft: '20px', fontSize: '12px' }}>
+                <li>Custom.SustainabilityRequirements (Long Text, 4000 chars)</li>
+                <li>Custom.SustainabilityLastModified (DateTime)</li>
+                <li>Custom.SustainabilityVersion (Text, 50 chars)</li>
+              </ol>
+              <p style={{ margin: '10px 0 0 0', fontSize: '12px' }}>
+                📖 <strong>Ver documentación completa:</strong> docs/CONFIGURATION.md
+              </p>
+            </div>
+          </details>
+        </div>
+      )}
 
       {requirements.length > 0 ? (
         <>
@@ -1761,6 +1967,65 @@ const WorkItemRequirements: React.FC = () => {
               title="Refresh requirements manually if they don't update automatically"
             >
               Refresh Now
+            </button>
+            
+            <button 
+              onClick={async () => {
+                console.log('🔍 Ejecutando diagnóstico de sincronización...');
+                try {
+                  await HybridWorkItemStorage.diagnoseSyncStatus();
+                  
+                  // Verificar datos en ambas fuentes
+                  const azureData = await HybridWorkItemStorage.loadFromAzureDevOps();
+                  const localData = WorkItemStorage.getSelectedRequirements();
+                  
+                  const diagReport = 
+                    `🔍 SYNCHRONIZATION DIAGNOSTIC REPORT\n\n` +
+                    `Work Item ID: ${workItemId}\n\n` +
+                    `📊 STORAGE STATUS:\n` +
+                    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+                    `☁️ Azure DevOps (Multi-device):\n` +
+                    `   ${azureData && azureData.length > 0 ? '✅ ACTIVE' : '❌ NO DATA'}\n` +
+                    `   Requirements: ${azureData ? azureData.length : 0}\n` +
+                    `   Field: Custom.SustainabilityRequirements\n\n` +
+                    `💾 Local Storage (This browser only):\n` +
+                    `   ${localData.length > 0 ? '✅ ACTIVE' : '❌ NO DATA'}\n` +
+                    `   Requirements: ${localData.length}\n\n` +
+                    `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
+                    `📱 AVAILABILITY:\n` +
+                    `${azureData && azureData.length > 0 
+                      ? '✅ Available on ALL devices/browsers\n✅ Synchronized with Azure DevOps'
+                      : '⚠️ Only available on THIS browser/computer\n❌ NOT synchronized - Configure custom fields!'}\n\n` +
+                    `${!azureData || azureData.length === 0 
+                      ? '📋 REQUIRED ACTION:\nConfigure custom fields in Azure DevOps:\n' +
+                        '1. Custom.SustainabilityRequirements (Long Text)\n' +
+                        '2. Custom.SustainabilityLastModified (DateTime)\n' +
+                        '3. Custom.SustainabilityVersion (Text)\n\n' +
+                        'See: docs/CONFIGURATION.md'
+                      : ''}\n` +
+                    `See browser console for detailed logs.`;
+                  
+                  alert(diagReport);
+                  
+                } catch (error) {
+                  console.error('❌ Error en diagnóstico:', error);
+                  alert('❌ Diagnostic error. Check browser console for details.');
+                }
+              }}
+              style={{
+                padding: '8px 12px',
+                margin: '10px 5px 10px 0',
+                backgroundColor: '#6c757d',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: 'bold'
+              }}
+              title="Check synchronization status between local storage and Azure DevOps"
+            >
+              🔍 Check Sync Status
             </button>
           </div>
           
